@@ -204,7 +204,8 @@ pub fn bind_label_lazy(
                 lfp.font_family.clone(),
             )
             .max(lfp.font_size * 2.0);
-            if (mw.get() - new_w).abs() > 0.5 {
+            let old_w = mw.get();
+            if (old_w - new_w).abs() > 0.5 {
                 mw.set(new_w);
                 crate::core::element::with_ct_mut(|ct| {
                     ct.layout.entry(eid).or_default().preferred_width = Some(new_w);
@@ -218,7 +219,7 @@ pub fn bind_label_lazy(
             old_gen,
             old_gen.wrapping_add(1),
         );
-        let flags = DirtyFlags::REPAINT | DirtyFlags::MEASURE;
+        let flags = DirtyFlags::REPAINT | DirtyFlags::MEASURE | DirtyFlags::REPOSITION;
         dirty.set(dirty.get() | flags);
         if let Some(app) = app.upgrade() {
             app.register_dirty(eid, flags);
