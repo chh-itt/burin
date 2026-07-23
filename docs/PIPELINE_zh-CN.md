@@ -12,15 +12,13 @@
 | GPUI | 每帧全量元素树重建 | O(N) 每帧重建 |
 | Xilem | `View::rebuild(prev, new, state)` | O(N) 视图比较 |
 
-这些策略存在的原因是**它们的宿主语言缺乏响应式原语**。JavaScript 无法内建"这个变量变了，通知它的依赖者"。Dart 有 `ChangeNotifier` 但跟踪是手动的。Elm 的纯函数模型完全禁止副作用。
-
-Rust 没有这个问题。
+这些策略存在的原因是 JavaScript、Dart 和 Elm 缺乏响应式原语。JavaScript 无法内建"这个变量变了，通知它的依赖者"。Dart 有 `ChangeNotifier` 但跟踪是手动的。Elm 的纯函数模型完全禁止副作用。Rust 用 `Signal<T>` 填补了这个空白。
 
 ---
 
-## Rust 的礼物：`Signal<T>`
+## `Signal<T>` in Rust
 
-[`auralis-signal`](https://github.com/chh-itt/auralis) 提供了一个原语，从根本上消除了整个 diff 问题：
+[`auralis-signal`](https://github.com/chh-itt/auralis) 提供了一个原语，用于解决 diff 问题：
 
 ```rust
 let count = Signal::new(0);
@@ -48,7 +46,7 @@ count.set(1);                     // 通知 → 标记元素为脏
 - **GPUI 的 `cx.notify()`**：手动通知，按 entity 操作。
 - **Ribir 的 `Stateful<T>` / rxrust**：基于 Rx，跟踪字段级变化但需要显式的 `part_writer` 设置。
 
-Burin 的 `Signal<T>` 是**零样板、自动跟踪、O(1) 通知。**
+Burin 的 `Signal<T>` 是零样板、自动跟踪的，通知开销为 O(1)。
 
 ---
 
@@ -142,7 +140,7 @@ Burin 的 `Signal<T>` 是**零样板、自动跟踪、O(1) 通知。**
 
 ---
 
-## 我们没有的东西（以及为什么这是好事）
+## 我们没有的东西
 
 ### 没有虚拟 DOM
 
@@ -165,16 +163,16 @@ Burin **不需要依赖图**——每个绑定走的是**精准寻址式推送**
 register_dirty(element_id, REPAINT)
 ```
 
-不查图，不遍历，不拓扑排序。绑定闭包在创建时就知道了更新该落在哪个元素上——
+不查图、不遍历、不拓扑排序。绑定闭包在创建时就知道了更新该落在哪个元素上：
 subscriber 列表只是一个平坦的 Vec，不是一棵依赖树。
 
 **代价呢？** 每个绑定一个闭包，存在元素的 `LifecycleComponent` 里。元素销毁时
-`Drop` 自动退订——不需要手动清理，不会有悬垂回调。auralis executor 在每帧开头
+`Drop` 自动退订，无需手动清理，也不会有悬垂回调。auralis executor 在每帧开头
 批量执行延迟通知，同一帧内多次 `set()` 合并为一次 `process_dirty_set`。
 
-这套机制的维护成本实质上是零。Rust 的 `Drop` 替我们做了所有关系保洁——不需要图遍历，
-不需要 GC，不需要手动取消订阅。Signal 只管推，Element 只管活，活够了就走。
-一切订阅关系在编译期就已经被类型系统和所有权模型静态化。
+这套机制的维护成本实质上是零。Rust 的 `Drop` 替我们做了所有关系保洁：不需要图遍历、
+不需要 GC、不需要手动取消订阅。Signal 直接推送到元素。元素销毁时，
+订阅一并消亡。一切订阅关系在编译期就已经被类型系统和所有权模型静态化。
 
 - Slint: Property<T> 运行时追踪，通过 thread-local CURRENT_BINDING 注册
 - Ribir: rxrust 订阅图
@@ -194,7 +192,7 @@ subscriber 列表只是一个平坦的 Vec，不是一棵依赖树。
 
 ---
 
-## 为什么这是正确的：所有权 + RAII
+## 所有权和 RAII
 
 Burin 在三个关键点利用 Rust 的所有权模型：
 
@@ -277,7 +275,7 @@ fn pipeline_demo() -> impl Widget {
 
 ---
 
-## 对比：别人付出的代价
+## 代码对比
 
 ```rust
 // Flutter — 手动 setState, widget 重建, element diff
@@ -302,10 +300,10 @@ Text::new("0").bind(count);
 
 ## 扩展阅读
 
-- [docs/PIPELINE_zh-CN.md](PIPELINE_zh-CN.md) — 本文档
-- [docs/testing_zh-CN.md](testing_zh-CN.md) — TestHarness、快照回归、O(k) 断言
-- [docs/getting-started_zh-CN.md](getting-started_zh-CN.md) — 安装、最小应用、Feature Flags
-- [src/lib.rs](../src/lib.rs) — 模块地图与设计原则
-- [src/core/dirty_registry.rs](../src/core/dirty_registry.rs) — 脏传播系统
-- [src/event/propagation.rs](../src/event/propagation.rs) — 事件分发与 Action 路由
-- [tests/ok_assertions.rs](../tests/ok_assertions.rs) — O(k) 保证测试
+- [docs/PIPELINE_zh-CN.md](PIPELINE_zh-CN.md)：本文档
+- [docs/testing_zh-CN.md](testing_zh-CN.md)：TestHarness、快照回归、O(k) 断言
+- [docs/getting-started_zh-CN.md](getting-started_zh-CN.md)：安装、最小应用、Feature Flags
+- [src/lib.rs](../src/lib.rs)：模块地图与设计原则
+- [src/core/dirty_registry.rs](../src/core/dirty_registry.rs)：脏传播系统
+- [src/event/propagation.rs](../src/event/propagation.rs)：事件分发与 Action 路由
+- [tests/ok_assertions.rs](../tests/ok_assertions.rs)：O(k) 保证测试

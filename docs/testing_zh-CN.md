@@ -1,7 +1,7 @@
 # 测试
 
-Burin 提供 `TestHarness`——一个无头、无窗口、无 GPU 的测试驱动，运行的是
-**与生产窗口完全相同**的 `drive_frame_*` 管线。
+Burin 提供 `TestHarness`，一个无头、无窗口、无 GPU 的测试驱动，运行的是
+与生产窗口相同的 `drive_frame_*` 管线。
 
 ```rust
 use burin::testing::TestHarness;
@@ -58,7 +58,7 @@ h.assert_dirty(id);                      // 脏标记
 
 ## O(k) 性能断言
 
-与其他 GUI 测试框架不同，Burin 暴露了量化的性能保证：
+Burin 通过测试框架暴露量化的性能指标：
 
 ```rust
 // 断言未变兄弟从缓存回放。
@@ -74,7 +74,7 @@ h.assert_dirty_set_size(10);
 h.assert_paint_command_count(50);
 ```
 
-这些断言验证的是框架做了 O(k) 的**工作量**，而不仅仅是输出了正确的结果。
+这些断言验证的是框架做了 O(k) 的工作量，而不仅仅是输出了正确的结果。
 
 ## 快照回归
 
@@ -126,7 +126,7 @@ cargo test --profile bench --test perf_causal --features devtools -- --ignored -
 
 ## 生产等价性
 
-测试框架运行的是**与真实窗口完全相同的函数**：
+测试框架运行的是与真实窗口相同的函数：
 
 | 子系统 | 生产环境 | 测试框架 | 相同代码？ |
 |--------|---------|---------|:--------:|
@@ -138,4 +138,4 @@ cargo test --profile bench --test perf_causal --features devtools -- --ignored -
 | Hover 链 | 链差异 + 离开/进入传播 | 相同算法 | ✓ |
 | 可访问性 | `build_accessibility_tree` | 相同函数 | ✓ |
 
-这意味着：如果测试通过了，生产代码路径就是经过验证的——不是 mock。
+这意味着如果测试通过了，生产代码路径就是经过验证的，不是 mock。

@@ -16,7 +16,7 @@ pub enum Event {
 
 ## HitTest（命中测试）
 
-`src/event/hit_test.rs:10` — 两级命中测试：
+`src/event/hit_test.rs:10`。两级命中测试：
 
 1. **`spatial_hit_test`**（O(1)）：空间哈希网格，按屏幕坐标索引。返回该点最深层的可见元素。
 2. **`hit_test_leaf`**（O(N) 回退）：全深度遍历。仅在空间网格未命中时调用（元素尚未注册或已移出网格）。
@@ -25,7 +25,7 @@ pub enum Event {
 
 ## 传播
 
-`src/event/propagation.rs:18` — `dispatch_event()` 通过命中路径路由事件：
+`src/event/propagation.rs:18`。`dispatch_event()` 通过命中路径路由事件：
 
 - **捕获阶段**（根→叶）：Action（`KeyDown` → `dispatch_action`）先沿此方向遍历。
 - **冒泡阶段**（叶→根）：大多数指针事件（`PointerDown`、`Click`）在最深层处理器处解决。
@@ -39,7 +39,7 @@ assert_eq!(fired.get(), "child");  // 不是 "parent"
 
 ## 手势竞技场
 
-`src/event/recognizer.rs` — 7 种 Recognizer 在每个指针的单个竞技场中竞争：
+`src/event/recognizer.rs`。7 种 Recognizer 在每个指针的单个竞技场中竞争：
 
 | Recognizer | 胜出条件 |
 |------------|---------|
@@ -51,7 +51,7 @@ assert_eq!(fired.get(), "child");  // 不是 "parent"
 | `ScrollRecognizer` | 在可滚动表面上的触摸拖拽 |
 | `Custom` | 用户自定义逻辑 |
 
-关键保证：一个 `PointerDown` 永远不会同时触发点击和长按。
+一个 `PointerDown` 永远不会同时触发点击和长按。
 
 ## 焦点
 
@@ -66,7 +66,7 @@ h.focus_manager.set_focused(Some(element_id));
 
 ## 键盘 → Action
 
-`src/event/bindings.rs` — `KeyBindingMap` 将组合键映射为 Action：
+`src/event/bindings.rs`。`KeyBindingMap` 将组合键映射为 Action：
 
 ```
 Ctrl+A → ActionKind::SelectAll

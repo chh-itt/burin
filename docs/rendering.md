@@ -14,7 +14,7 @@ backend is active.
 
 ## Painter API
 
-`src/render/painter.rs` — Unified drawing primitives:
+`src/render/painter.rs`. Unified drawing primitives:
 
 ```rust
 // Inside a paint function:
@@ -29,11 +29,11 @@ painter.draw_image(image_id, rect);
 
 ## Scene Cache / Subtree Cache
 
-`src/render/paint_tree.rs` — Two-level cache:
+`src/render/paint_tree.rs`. Two-level cache:
 
 1. **`CachedSubtree`**: Stores the `Vec<DrawCommand>` for a subtree. When an
    element's `subtree_gen == cache_gen`, the entire subtree's draw commands are
-   replayed from cache — O(1) per element.
+   replayed from cache at O(1) per element.
 2. **`CachedScene`**: Per-frame scene cache keyed by surface properties.
 
 Cache invalidation: `bump_subtree_gen(eid)` increments the generation counter.

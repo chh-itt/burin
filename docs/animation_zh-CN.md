@@ -45,7 +45,7 @@ Animation::new(0.0f32)
 
 ## AnimationDriver
 
-`src/animation/` — `AnimationDriver` 处理逐帧插值。动画通过
+`src/animation/`。`AnimationDriver` 处理逐帧插值。动画通过
 `app.register_animation(eid, flags)` 向驱动器注册。每帧，活跃的动画被 tick，
 受动画影响的元素自动标记为脏。
 

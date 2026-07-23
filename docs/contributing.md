@@ -28,7 +28,7 @@ burin/
 
 - `#![forbid(unsafe_code)]` everywhere except platform boundaries
 - `Signal<T>` is the only state primitive
-- No proc macros, no DSL, no template language
+- No proc macros, DSL, or template language
 - Composition over inheritance (traits, not class hierarchies)
 - All external state must be behind `Signal<T>`
 
@@ -50,7 +50,7 @@ cargo test --test visual_regression --features backend-tiny-skia
 
 ## Code Style
 
-Follow the existing patterns in each module. Key idioms:
+Follow the existing patterns in each module. Common idioms:
 
 - Widgets mount via `mount_box(&mut MountContext)` → `ElementId`
 - Properties mutate via `Element::set_*` methods (with `dirty_registry::register_dirty`)

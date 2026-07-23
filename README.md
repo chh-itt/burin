@@ -46,12 +46,12 @@ fn main() {
 
 ---
 
-## How It Works
+## How it works
 
 Burin builds on [Auralis](https://github.com/chh-itt/auralis), a standalone
 reactive kernel. `Signal<T>` auto-subscribes on read and auto-notifies on write.
 From there, a single-direction pipeline connects each signal change to the
-rendering layer — no virtual DOM, no tree diff, no reconciliation:
+rendering layer (no virtual DOM, no tree diff, no reconciliation):
 
 ```
 Signal::set()
@@ -63,17 +63,16 @@ Signal::set()
   → GPU (wgpu) or CPU (tiny-skia)    same Painter API for both
 ```
 
-Different languages lead to different architectures. Flutter proved that
-retained-mode incremental rendering works at scale. Burin reaches the same
-architectural guarantees — fine-grained dirty marking, incremental layout,
-subtree caching — in a fraction of the code. The difference isn't talent.
-It's what Rust makes possible.
+Different languages lead to different architectures. Flutter showed that
+retained-mode incremental rendering works at scale. Burin provides the same
+architectural guarantees (fine-grained dirty marking, incremental layout,
+subtree caching) in a fraction of the code.
 
 ---
 
 ## Widgets
 
-60 built-in widgets. Pure Rust. No DSL.
+60 built-in widgets in pure Rust, with no DSL.
 
 | Category | Widgets |
 |----------|---------|
@@ -85,7 +84,7 @@ It's what Rust makes possible.
 
 ---
 
-## Dual Backend
+## Dual backend
 
 | | GPU | CPU |
 |------|-----|-----|
@@ -93,7 +92,7 @@ It's what Rust makes possible.
 | When | Desktop, performance-critical | No-GPU, headless, CI, SSR |
 | API | `Painter` trait | Same `Painter` trait |
 
-Widgets don't know which backend is running. Write once, render anywhere.
+Widgets don't need to know which backend is running. The same code works on any backend.
 
 ```
 // Desktop window
@@ -105,7 +104,7 @@ let png = burin::render::ssr::render_to_png(my_ui(), 1200, 800)?;
 
 ---
 
-## Gesture Arena
+## Gesture arena
 
 Not a flat `on_click` callback list. A Flutter-style multi-recognizer arena that
 arbitrates gesture conflicts:
@@ -122,7 +121,7 @@ compete in one arena. One PointerDown never fires both click and drag.
 
 ---
 
-## Material 3 Theme
+## Material 3 theme
 
 HCT color engine. Single seed color → full light/dark palette:
 
@@ -130,14 +129,14 @@ HCT color engine. Single seed color → full light/dark palette:
 let theme = M3Theme::from_seed(Color::rgba8(103, 121, 232, 255));
 ```
 
-Pluggable `Theme` trait — drop in Fluent, Cupertino, or custom brand themes.
+Pluggable `Theme` trait, with support for Fluent, Cupertino, or custom brand themes.
 
 ---
 
-## TestHarness — Headless Full-Frame Testing
+## TestHarness: headless full-frame testing
 
 The test harness runs the **exact same** `drive_frame_*` functions as the real
-window. No mock. Same hit test. Same gesture arena. Same layout.
+window, with no mocking and the same hit test, gesture arena, and layout.
 
 ```rust
 let mut h = TestHarness::new(800.0, 600.0);
@@ -167,7 +166,7 @@ record-replay, and per-dimension perf regression suite.
 
 ---
 
-## Feature Flags
+## Feature flags
 
 | Feature | Default | What |
 |---------|:------:|------|
@@ -188,7 +187,7 @@ record-replay, and per-dimension perf regression suite.
 
 ---
 
-## Quick Start
+## Quick start
 
 ```toml
 [dependencies]

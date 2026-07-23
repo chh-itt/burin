@@ -1,7 +1,7 @@
 # Testing
 
-Burin provides `TestHarness` — a headless, window-free, GPU-free test driver that
-runs the **exact same** `drive_frame_*` pipeline as the production window.
+Burin provides `TestHarness`, a headless, window-free, GPU-free test driver that
+runs the same `drive_frame_*` pipeline as the production window.
 
 ```rust
 use burin::testing::TestHarness;
@@ -56,10 +56,9 @@ h.assert_child_count(id, count);         // child count
 h.assert_dirty(id);                      // dirty flag
 ```
 
-## O(k) Performance Assertions
+## O(k) performance assertions
 
-Unlike any other GUI test framework, Burin exposes quantitative performance
-guarantees:
+Burin exposes quantitative performance metrics through the harness:
 
 ```rust
 // Assert unchanged siblings replayed from cache.
@@ -75,7 +74,7 @@ h.assert_dirty_set_size(10);
 h.assert_paint_command_count(50);
 ```
 
-These assertions verify the framework did O(k) **work**, not just produced
+These assertions verify the framework did O(k) work, rather than just producing
 correct output.
 
 ## Snapshot Regression
@@ -129,7 +128,7 @@ stability, layout oscillation detection.
 
 ## Production Equivalence
 
-The harness runs the **exact same functions** as the real window:
+The harness runs the same functions as the real window:
 
 | Subsystem | Production | Harness | Same code? |
 |-----------|-----------|---------|:----------:|
@@ -141,4 +140,4 @@ The harness runs the **exact same functions** as the real window:
 | Hover chain | Chain diff + leave/enter propagation | Same algorithm | ✓ |
 | Accessibility | `build_accessibility_tree` | Same function | ✓ |
 
-This means: if a test passes, the production code path is verified — not a mock.
+This means if a test passes, the production code path is verified, not a mock.

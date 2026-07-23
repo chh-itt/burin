@@ -16,7 +16,7 @@ pub enum Event {
 
 ## Hit Testing
 
-`src/event/hit_test.rs:10` — Two-tier hit testing:
+`src/event/hit_test.rs:10`. Two-tier hit testing:
 
 1. **`spatial_hit_test`** (O(1)): Spatial hash grid indexed by screen coordinates.
    Returns the deepest visible element at the point.
@@ -27,7 +27,7 @@ The result is `HitTestResult { target, path (leaf → root) }`.
 
 ## Propagation
 
-`src/event/propagation.rs:18` — `dispatch_event()` routes events through the hit path:
+`src/event/propagation.rs:18`. `dispatch_event()` routes events through the hit path:
 
 - **Capture phase** (root → leaf): Actions (`KeyDown` → `dispatch_action`) traverse
   this direction first.
@@ -43,7 +43,7 @@ assert_eq!(fired.get(), "child");  // not "parent"
 
 ## Gesture Arena
 
-`src/event/recognizer.rs` — 7 recognizer types compete in a single arena per pointer:
+`src/event/recognizer.rs`. 7 recognizer types compete in a single arena per pointer:
 
 | Recognizer | Wins when |
 |------------|-----------|
@@ -55,7 +55,7 @@ assert_eq!(fired.get(), "child");  // not "parent"
 | `ScrollRecognizer` | Touch drag on scrollable surface |
 | `Custom` | User-defined logic |
 
-Key guarantee: one `PointerDown` never fires both a tap and a long-press.
+A single `PointerDown` never fires both a tap and a long-press.
 
 ## Focus
 
@@ -70,7 +70,7 @@ h.focus_manager.set_focused(Some(element_id));
 
 ## Keyboard → Action
 
-`src/event/bindings.rs` — `KeyBindingMap` maps chords to actions:
+`src/event/bindings.rs`. `KeyBindingMap` maps chords to actions:
 
 ```
 Ctrl+A → ActionKind::SelectAll

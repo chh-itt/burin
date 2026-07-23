@@ -451,7 +451,7 @@ impl ScrollBundle {
             if delta == 0.0 {
                 return (pos, 0.0);
             }
-            let desired = pos + delta;
+            let desired = pos - delta;
             let friction_applied = if pos < min || pos > max {
                 pos + physics.apply_user_offset(pos, delta, min, max)
             } else {
@@ -459,7 +459,7 @@ impl ScrollBundle {
             };
             let overscroll = physics.apply_boundary_conditions(pos, friction_applied, min, max);
             let result = friction_applied - overscroll;
-            (result, desired - result)
+            (result, delta + result - pos)
         };
 
         let (nx, ux) = scroll_axis(offset.x, dx, 0.0, max_x);

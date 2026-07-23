@@ -28,7 +28,7 @@ burin/
 
 - `#![forbid(unsafe_code)]` 适用于除平台边界外的所有代码
 - `Signal<T>` 是唯一的状态原语
-- 无过程宏、无 DSL、无模板语言
+- 无过程宏、DSL 或模板语言
 - 组合优于继承（trait，而非类继承）
 - 所有外部状态必须放在 `Signal<T>` 后面
 
@@ -50,7 +50,7 @@ cargo test --test visual_regression --features backend-tiny-skia
 
 ## 代码风格
 
-遵循每个模块中的现有模式。关键惯用法：
+遵循每个模块中的现有模式。常见惯用法：
 
 - Widget 通过 `mount_box(&mut MountContext)` → `ElementId` 挂载
 - 属性通过 `Element::set_*` 方法修改（配合 `dirty_registry::register_dirty`）

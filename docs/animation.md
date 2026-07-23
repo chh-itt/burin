@@ -45,7 +45,7 @@ Animation::new(0.0f32)
 
 ## Animation Driver
 
-`src/animation/` — `AnimationDriver` handles frame-by-frame interpolation.
+`src/animation/`. `AnimationDriver` handles frame-by-frame interpolation.
 Animations register with the driver via `app.register_animation(eid, flags)`.
 On each frame, active animations are ticked, and elements affected by animation
 are marked dirty automatically.

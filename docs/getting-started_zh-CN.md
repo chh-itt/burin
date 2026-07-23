@@ -141,6 +141,6 @@ burin = { git = "...", default-features = false, features = [
 
 ## 下一步
 
-- [渲染管线](PIPELINE_zh-CN.md) — Signal 如何变成像素
-- [Widget 一览](widget-catalog_zh-CN.md) — 全部 60 个内置 Widget
-- [自动化测试](testing_zh-CN.md) — TestHarness 无头测试
+- [渲染管线](PIPELINE_zh-CN.md)，描述 Signal 如何变成像素
+- [Widget 一览](widget-catalog_zh-CN.md)，列出全部 60 个内置 Widget
+- [自动化测试](testing_zh-CN.md)，介绍 TestHarness 无头测试

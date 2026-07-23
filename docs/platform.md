@@ -27,7 +27,7 @@ App::new()
 
 ## Portal System
 
-`src/platform/portal.rs` — Portal-based overlays (dropdown menus, popovers,
+`src/platform/portal.rs`. Portal-based overlays (dropdown menus, popovers,
 tooltips) render at the root level but are anchored to their source element.
 Portals automatically reposition when the source element moves or the viewport
 resizes.

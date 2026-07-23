@@ -46,11 +46,11 @@ fn main() {
 
 ---
 
-## 为什么这么设计
+## 工作原理
 
 Burin 基于独立的响应式内核 [Auralis](https://github.com/chh-itt/auralis) 构建。
 `Signal<T>` 在读取时自动订阅，在写入时自动通知。以此为起点，一条单向管线将每个
-信号变更连接到渲染层——没有虚拟 DOM、没有树 diff、没有 reconciliation：
+信号变更连接到渲染层（没有虚拟 DOM、没有树 diff、没有 reconciliation）：
 
 ```
 Signal::set()
@@ -62,9 +62,8 @@ Signal::set()
   → GPU (wgpu) 或 CPU (tiny-skia)    同一套 Painter API
 ```
 
-每种语言催生不同的架构。Flutter 用百万行代码证明了保留模式增量渲染可行。
-Burin 用少得多的代码达到了同等的架构质量——不是因为我们更出色，是 Rust
-让这条路成为可能。
+每种语言催生不同的架构。Flutter 证明了保留模式增量渲染在大规模应用中是可行的。
+Burin 用更少的代码提供了同等的架构保证（细粒度脏标记、增量布局、子树缓存）。
 
 ---
 
@@ -90,7 +89,7 @@ Burin 用少得多的代码达到了同等的架构质量——不是因为我�
 | 场景 | 桌面应用、高性能渲染 | 无 GPU 环境、CI、SSR |
 | API | `Painter` trait | 同一个 `Painter` trait |
 
-Widget 不需要知道自己在用哪个渲染器。写一次，到处渲染。
+Widget 不需要知道当前用的是哪个后端。同一份代码在任何后端上都能工作。
 
 ```
 // 桌面窗口
@@ -125,13 +124,13 @@ HCT 色彩引擎。单个种子色 → 完整亮色/暗色调色板：
 let theme = M3Theme::from_seed(Color::rgba8(103, 121, 232, 255));
 ```
 
-可插拔 `Theme` trait——可接入 Fluent、Cupertino 或自定义品牌主题。
+可插拔 `Theme` trait，支持 Fluent、Cupertino 或自定义品牌主题。
 
 ---
 
-## TestHarness——无头全帧测试
+## TestHarness：无头全帧测试
 
-测试框架运行的是**与真实窗口完全相同**的 `drive_frame_*` 函数。不是 mock。同一个 HitTest。同一个手势竞技场。同一个布局引擎。
+测试框架运行的是**与真实窗口完全相同**的 `drive_frame_*` 函数，没有 mock，使用相同的 HitTest、手势竞技场和布局引擎。
 
 ```rust
 let mut h = TestHarness::new(800.0, 600.0);

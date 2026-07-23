@@ -1,6 +1,6 @@
 # Widget Catalog
 
-60 built-in widgets. All pure Rust. No DSL.
+60 built-in widgets, all pure Rust with no DSL.
 
 ## Layout
 

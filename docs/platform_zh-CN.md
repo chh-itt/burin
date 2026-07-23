@@ -27,7 +27,7 @@ App::new()
 
 ## Portal 系统
 
-`src/platform/portal.rs` — 基于 Portal 的覆盖层（下拉菜单、Popover、Tooltip）
+`src/platform/portal.rs`。基于 Portal 的覆盖层（下拉菜单、Popover、Tooltip）
 在根级别渲染，但锚定到源元素。当源元素移动或视口调整大小时，Portal 会自动重新定位。
 
 ```rust

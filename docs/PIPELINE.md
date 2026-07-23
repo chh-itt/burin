@@ -13,19 +13,17 @@ what needs to be re-drawn?"**
 | GPUI | Per-frame full element tree rebuild | O(N) rebuild every frame |
 | Xilem | `View::rebuild(prev, new, state)` | O(N) view comparison |
 
-These strategies exist because **their host languages lack a reactive primitive**.
-JavaScript has no built-in way to say "this variable changed, notify its
-dependents." Dart has `ChangeNotifier` but tracking is manual. Elm's purity
-model forbids side-effects entirely.
-
-Rust doesn't have this problem.
+These strategies exist because JavaScript, Dart, and Elm lack a reactive
+primitive. JavaScript has no built-in way to say "this variable changed, notify
+its dependents." Dart has `ChangeNotifier` but tracking is manual. Elm's purity
+model forbids side-effects entirely. Rust has `Signal<T>` to fill that gap.
 
 ---
 
-## Rust's Gift: `Signal<T>`
+## `Signal<T>` in Rust
 
 [`auralis-signal`](https://github.com/chh-itt/auralis) provides one primitive
-that eliminates the entire diffing problem:
+that solves the diffing problem:
 
 ```rust
 let count = Signal::new(0);
@@ -54,7 +52,7 @@ This is fundamentally different from:
 - **Ribir's `Stateful<T>` / rxrust**: Rx-based, tracks field-level changes but
   requires explicit `part_writer` setup.
 
-Burin's `Signal<T>` is **zero-boilerplate, auto-tracking, and O(1) to notify.**
+Burin's `Signal<T>` is zero-boilerplate and auto-tracking, with O(1) notification.
 
 ---
 
@@ -151,14 +149,14 @@ Burin's `Signal<T>` is **zero-boilerplate, auto-tracking, and O(1) to notify.**
 
 ---
 
-## What We Explicitly Don't Have
+## What we don't have
 
 ### No Virtual DOM
 
 A virtual DOM is a lightweight replica of the real DOM, used to compute what
 changed. Burin has **no virtual DOM** because the real element tree IS the
 source of truth. When a Signal changes, the element's properties are mutated
-in-place. There is nothing to diff.
+in place. There is nothing to diff.
 
 - Flutter: Widget tree (ephemeral) → Element tree (persistent) → RenderObject tree → diff
 - Burin: Element tree (persistent) → dirty flag → process
@@ -166,7 +164,7 @@ in-place. There is nothing to diff.
 ### No Dependency Graph
 
 Many reactive systems maintain an explicit graph: Node A depends on B depends
-on C. Burin has **no dependency graph** — instead, each binding works by
+on C. Burin has **no dependency graph**. Instead, each binding works by
 **targeted push**:
 
 During mount, when an element subscribes to a `Signal<T>`, the subscription
@@ -177,30 +175,30 @@ closure already knows its target `ElementId` and the specific dirty flag
 register_dirty(element_id, REPAINT)
 ```
 
-No lookup. No graph traversal. No topological sort. The binding closure
-hard-codes where the update should land — the subscriber list is a flat vec,
+There is no lookup, graph traversal, or topological sort. The binding closure
+hard codes where the update should land: the subscriber list is a flat vec,
 not a dependency tree.
 
 **Cost?** One closure per binding, stored in the element's `LifecycleComponent`.
-When the element is destroyed, `Drop` unsubscribes automatically — no manual
-cleanup, no dangling callbacks. The executor batches deferred notifications
+When the element is destroyed, `Drop` unsubscribes automatically with no manual
+cleanup or dangling callbacks. The executor batches deferred notifications
 at the start of each frame, so multiple `set()` calls within one frame merge
 into a single `process_dirty_set` pass.
 
 In practice, this means zero relationship maintenance overhead. Rust's `Drop`
-handles all cleanup — no graph traversal, no GC, no manual unsubscribe.
-Signal pushes. Element lives. When the element is done, the subscription
-dies with it. Every binding relationship is statically determined at compile
+handles all cleanup: no graph traversal, no GC, and no manual unsubscribe.
+The signal pushes directly to the element. When the element is destroyed,
+the subscription dies with it. Every binding relationship is statically determined at compile
 time by Rust's type system and ownership model.
 
 - Slint: `Property<T>` runtime dependency tracking via thread-local `CURRENT_BINDING`
 - Ribir: rxrust subscription graph
-- Burin: targeted push — each subscriber knows its target `ElementId` at mount time
+- Burin: targeted push, where each subscriber knows its target `ElementId` at mount time
 
 ### No Reconciliation
 
 Reconciliation compares an old tree with a new tree to find what changed.
-Burin has **no reconciliation** because elements are mutated in-place. The
+Burin has **no reconciliation** because elements are mutated in place. The
 `DirtyFlags` bitmask records exactly what changed (MEASURE, REPOSITION, REPAINT)
 and `process_dirty_set` propagates only as far as necessary.
 
@@ -213,9 +211,9 @@ topology never changes due to state updates.
 
 ---
 
-## Why This Is Correct: Ownership + RAII
+## Ownership and RAII
 
-Burin leverages Rust's ownership model at three critical points:
+Burin uses Rust's ownership model at three critical points:
 
 1. **Element lifecycle tied to Signal subscriptions.**
    When an element binds to a Signal via `bind_label_lazy`
@@ -239,7 +237,7 @@ Burin leverages Rust's ownership model at three critical points:
 ## Why This Is Testable: TestHarness
 
 The test harness (`src/testing/test_harness.rs`) runs the **exact same**
-`drive_frame_*` functions as the production window. This isn't mock testing —
+`drive_frame_*` functions as the production window. This isn't mock testing:
 it's the real pipeline running headless.
 
 ```
@@ -303,7 +301,7 @@ writes `Signal::new()`, `.bind()`, and `.set()`.
 
 ---
 
-## Comparison: What Others Pay For
+## Code comparison
 
 ```rust
 // Flutter — manual setState, widget rebuild, element diff
@@ -328,10 +326,10 @@ Text::new("0").bind(count);
 
 ## Further Reading
 
-- [docs/PIPELINE.md](PIPELINE.md) — this document
-- [docs/testing.md](testing.md) — TestHarness, snapshot regression, O(k) assertions
-- [docs/getting-started.md](getting-started.md) — installation, minimal app, feature flags
-- [src/lib.rs](../src/lib.rs) — module map and design principles
-- [src/core/dirty_registry.rs](../src/core/dirty_registry.rs) — the dirty propagation system
-- [src/event/propagation.rs](../src/event/propagation.rs) — event dispatch and action routing
-- [tests/ok_assertions.rs](../tests/ok_assertions.rs) — O(k) guarantee tests
+- [docs/PIPELINE.md](PIPELINE.md): this document
+- [docs/testing.md](testing.md): TestHarness, snapshot regression, O(k) assertions
+- [docs/getting-started.md](getting-started.md): installation, minimal app, feature flags
+- [src/lib.rs](../src/lib.rs): module map and design principles
+- [src/core/dirty_registry.rs](../src/core/dirty_registry.rs): the dirty propagation system
+- [src/event/propagation.rs](../src/event/propagation.rs): event dispatch and action routing
+- [tests/ok_assertions.rs](../tests/ok_assertions.rs): O(k) guarantee tests
