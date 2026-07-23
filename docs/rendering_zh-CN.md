@@ -13,7 +13,7 @@
 
 ## Painter API
 
-`src/render/painter.rs` — 统一绘制原语：
+`src/render/painter.rs`。统一绘制原语：
 
 ```rust
 // 在绘制函数内部:
@@ -28,10 +28,10 @@ painter.draw_image(image_id, rect);
 
 ## 场景缓存 / 子树缓存
 
-`src/render/paint_tree.rs` — 两级缓存：
+`src/render/paint_tree.rs`。两级缓存：
 
 1. **`CachedSubtree`**：存储子树的 `Vec<DrawCommand>`。当元素的 `subtree_gen == cache_gen`
-   时，整个子树的绘制命令从缓存回放——O(1) 每个元素。
+   时，整个子树的绘制命令从缓存回放，O(1) 每个元素。
 2. **`CachedScene`**：按 surface 属性键控的每帧场景缓存。
 
 缓存失效：`bump_subtree_gen(eid)` 递增世代计数器。任何包含该元素的祖先缓存都会失效。

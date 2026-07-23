@@ -5,7 +5,7 @@ Burin 使用 [Taffy](https://github.com/DioxusLabs/taffy) 实现 Flexbox 和 CSS
 
 ## DirtyFlags（脏标记）
 
-`src/core/element.rs` — 三层布局脏标记：
+`src/core/element.rs`。三层布局脏标记：
 
 ```
 REPAINT    = 0b001   表面变化（颜色、边框、文本）。无需布局。
@@ -15,7 +15,7 @@ MEASURE    = 0b111   尺寸变化。Taffy 完整测量（双轴）。
 
 ## 脏传播
 
-`src/layout/dirty_propagation.rs:11` — `process_dirty_set()`：
+`src/layout/dirty_propagation.rs:11`。`process_dirty_set()`：
 
 1. 从全局脏集合收集脏元素。
 2. 按深度排序（最深优先）。
@@ -37,7 +37,7 @@ MEASURE    = 0b111   尺寸变化。Taffy 完整测量（双轴）。
 ## 布局边界
 
 当 `affected_by_child_size == false` 时，widget 成为**重布局边界**。
-子元素尺寸变化在该边界停止——父元素及其兄弟不会被重新布局。
+子元素尺寸变化在该边界停止。父元素及其兄弟不会被重新布局。
 
 ```rust
 el.set_affected_by_child_size(false);
