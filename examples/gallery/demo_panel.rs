@@ -1,6 +1,9 @@
 use auralis_signal::Signal;
+use burin::core::config::{ElementBuilder, LayoutConfig, PaintConfig};
 use burin::core::{ElementId, MountContext, Widget};
-use burin::style::{self, styled::Styled};
+use burin::ecs::components;
+use burin::style::styled::Styled;
+use burin::style::{self, CornerRadii, Dimension};
 use burin::widgets::display::Text;
 use burin::widgets::input::Checkbox;
 use burin::widgets::layout::*;
@@ -52,25 +55,42 @@ impl DemoPanel {
         });
         self
     }
+
+    fn component_mask(&self) -> u64 {
+        components::STYLE | components::LAYOUT | components::INTERACTION
+    }
 }
 
 impl Widget for DemoPanel {
     fn mount_box(self: Box<Self>, ctx: &mut MountContext<'_>) -> ElementId {
         let theme = ctx.theme;
-        let id = ctx.arena.allocate();
+        let id = ElementBuilder::new()
+            .with_components(self.component_mask())
+            .layout(LayoutConfig {
+                width: Dimension::Pixels(self.width),
+                padding: style::Padding::all(8.0),
+                gap: 6.0,
+                flex_grow: 0.0,
+                flex_shrink: 0.0,
+                ..LayoutConfig::default()
+            })
+            .paint(PaintConfig {
+                background: Some(theme.scheme.surface),
+                corner_radius: CornerRadii::all(6.0),
+                border_width: 1.0,
+                border_color: Some(theme.scheme.outline),
+                font_size: 12.0,
+                ..PaintConfig::default()
+            })
+            .build(ctx);
+
         {
-            let el = ctx.arena.get_mut(id).unwrap();
-            el.set_background(theme.scheme.surface);
-            el.set_corner_radius(6.0);
-            el.set_border_width(1.0);
-            el.set_border_color(theme.scheme.outline);
-            el.set_preferred_width(Some(self.width));
-            el.set_flex_grow(0.0);
-            el.set_flex_shrink(0.0);
-            el.set_padding(style::Padding::all(8.0));
-            el.set_gap(6.0);
-            el.set_font_size(12.0);
+            let Some(el) = ctx.arena.get_mut(id) else {
+                return id;
+            };
+            el.set_affected_by_child_size(true);
         }
+
         for item in self.items {
             let child_id = match item {
                 DemoItem::Field { label, value } => {
