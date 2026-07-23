@@ -1,7 +1,7 @@
 //! Nested scroll contract tests.
 //!
-//! Sign convention:
-//!   scroll_by(dx, dy): adds delta to offset — dy>0 = scroll down (show more below)
+//! Sign convention (unified -dy):
+//!   scroll_by(dx, dy): dy>0 = scroll up (offset decreases), dy<0 = scroll down
 //!   TestHarness::scroll: uses do_scroll which does o.y -= dy — dy<0 = scroll down
 
 use std::cell::Cell;
@@ -109,8 +109,8 @@ fn scroll_by_zero_unconsumed_within_bounds() {
         ),
     );
     h.run_frame();
-    // Scroll down within bounds — all consumed
-    let (_, uy) = scroll_direct(&h, id, 0.0, 100.0);
+    // Scroll down within bounds — all consumed (negative dy = scroll down)
+    let (_, uy) = scroll_direct(&h, id, 0.0, -100.0);
     assert!(uy.abs() < 0.5, "unconsumed y={:.1} should be 0", uy);
     assert!(scroll_offset_of(&h, id).y > 50.0);
 }
@@ -170,7 +170,7 @@ fn nested_inner_at_boundary_passes_unconsumed_to_outer() {
 
     // Simulate window.rs fallback: iterate chain, pass unconsumed
     let mut rx = 0.0_f32;
-    let mut ry = 100.0_f32;
+    let mut ry = -100.0_f32;
     for &eid in &chain {
         if rx == 0.0 && ry == 0.0 {
             break;
@@ -210,7 +210,7 @@ fn nested_inner_within_bounds_only_scrolls_inner() {
     let outer_before = scroll_offset_of(&h, outer_id);
 
     let mut rx = 0.0_f32;
-    let mut ry = 50.0_f32;
+    let mut ry = -50.0_f32;
     for &eid in &chain {
         if rx == 0.0 && ry == 0.0 {
             break;
