@@ -1,3 +1,6 @@
+use super::drag;
+use super::frame_hook::WindowFrameHook;
+use super::window_state::WindowState;
 use crate::core::config::StateFlags;
 use crate::core::dirty_registry;
 use crate::core::element::{apply_drag_layouts, reapply_element_theme, DirtyFlags};
@@ -7,9 +10,6 @@ use crate::event::Event;
 use crate::render::Painter;
 use crate::style::{Rect, Size};
 use std::time::Instant as StdInstant;
-use super::drag;
-use super::frame_hook::WindowFrameHook;
-use super::window_state::WindowState;
 
 impl WindowState {
     pub(crate) fn on_frame(&mut self) {

@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
+use super::submenu::{submenu_x, submenu_y};
 use crate::core::element::ElementArena;
 use crate::core::frame_driver::FrameHook;
-use crate::event::EventRegistry;
 use crate::core::ElementId;
-use super::submenu::{submenu_x, submenu_y};
+use crate::event::EventRegistry;
 
 /// Window's `FrameHook` impl: SEAM 1 (after-dirty) platform work — the hovered
 /// submenu delayed-open, plus signaling whether a full relayout is forced.

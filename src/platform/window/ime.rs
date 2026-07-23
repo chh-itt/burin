@@ -1,8 +1,8 @@
-use std::sync::Arc;
+use super::WindowState;
 use crate::core::dirty_registry;
 use crate::core::ElementId;
 use crate::style;
-use super::WindowState;
+use std::sync::Arc;
 
 /// Per-frame IME caret-area sync (IME area dedup P1).
 /// O(1) — reads the focused element's cached cursor rect from ECS.
@@ -16,8 +16,7 @@ pub(crate) fn sync_ime_cursor_area(state: &mut WindowState) {
     if !state.event_registry.has_text_input(fid) || state.event_registry.is_ime_suppressed(fid) {
         return;
     }
-    let bounds =
-        dirty_registry::bounds_of(fid).unwrap_or(style::Rect::ZERO);
+    let bounds = dirty_registry::bounds_of(fid).unwrap_or(style::Rect::ZERO);
     let sf = state.scale_factor as f32;
     let bounds_logical = style::Rect::new(
         bounds.x / sf,
@@ -32,8 +31,7 @@ pub(crate) fn sync_ime_cursor_area(state: &mut WindowState) {
     // Ancestor-accumulated scroll (not the element's own — TextInput may
     // sit inside a ScrollView).  O(1) via generation cache.
     let asc_scroll = dirty_registry::accumulated_scroll_cached(&state.arena, fid);
-    let area =
-        crate::platform::ime::compose_ime_surface_rect(bounds_logical, local, asc_scroll);
+    let area = crate::platform::ime::compose_ime_surface_rect(bounds_logical, local, asc_scroll);
 
     // Dedup: skip when the caret hasn't moved beyond 0.5 logical px.
     if let Some(last) = state.last_sent_ime_area {

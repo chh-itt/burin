@@ -10,7 +10,11 @@ pub(crate) fn cancel_path_for_visible(arena: &ElementArena, root_id: ElementId) 
     }
 }
 
-pub(crate) fn find_cancel_handler(arena: &ElementArena, eid: ElementId, path: &mut Vec<ElementId>) -> bool {
+pub(crate) fn find_cancel_handler(
+    arena: &ElementArena,
+    eid: ElementId,
+    path: &mut Vec<ElementId>,
+) -> bool {
     let el = match arena.get(eid) {
         Some(e) => e,
         None => return false,

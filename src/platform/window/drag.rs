@@ -1,3 +1,4 @@
+use super::WindowState;
 use crate::core::config::StateFlags;
 use crate::core::dirty_registry;
 use crate::core::element::DirtyFlags;
@@ -5,7 +6,6 @@ use crate::core::ElementId;
 use crate::event::DragData;
 use crate::render::wgpu::glyphon_bridge::create_buffer;
 use crate::style;
-use super::WindowState;
 
 /// State machine for in-app widget-to-widget drag-and-drop.
 pub(crate) struct DragState {
@@ -65,15 +65,7 @@ fn create_drag_ghost(
         el.set_flex_shrink(0.0);
         el.set_visible(true);
     }
-    let buf = create_buffer(
-        &label,
-        12.0,
-        1.3,
-        400,
-        None,
-        None,
-        style::TextAlign::Center,
-    );
+    let buf = create_buffer(&label, 12.0, 1.3, 400, None, None, style::TextAlign::Center);
     {
         let el = state.arena.get_mut(ghost_id).unwrap();
         el.set_text_buffer(std::rc::Rc::new(std::cell::RefCell::new(buf)));
@@ -129,13 +121,13 @@ fn update_drag_hover(state: &mut WindowState) {
         }
         if state.arena.get(id).is_some_and(|el| el.drop_target()) {
             // Validate accept_drop_types against payload kind
-            let accepted =
-                if let (Some(el), Some(ref payload)) = (state.arena.get(id), &ds.payload) {
-                    let types = el.accept_drop_types();
-                    types.is_empty() || types.iter().any(|dt| dt.matches(&payload.kind))
-                } else {
-                    true
-                };
+            let accepted = if let (Some(el), Some(ref payload)) = (state.arena.get(id), &ds.payload)
+            {
+                let types = el.accept_drop_types();
+                types.is_empty() || types.iter().any(|dt| dt.matches(&payload.kind))
+            } else {
+                true
+            };
             if accepted {
                 new_target = Some(id);
                 break;

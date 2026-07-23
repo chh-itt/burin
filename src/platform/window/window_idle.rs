@@ -1,8 +1,8 @@
+use super::ime;
+use super::window_state::WindowState;
 use crate::core::config::StateFlags;
 use crate::core::dirty_registry;
 use crate::event::FocusReason;
-use super::ime;
-use super::window_state::WindowState;
 
 impl WindowState {
     pub(crate) fn about_to_wait(&mut self, _event_loop: &dyn winit::event_loop::ActiveEventLoop) {

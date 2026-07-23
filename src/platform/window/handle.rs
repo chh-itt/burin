@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use super::icon::WindowIcon;
 use super::buttons::WindowButtons;
+use super::icon::WindowIcon;
 use crate::platform::CursorIcon;
 
 // ═══════════════════════ WindowHandle ═══════════════════════

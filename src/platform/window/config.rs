@@ -1,9 +1,9 @@
 use auralis_signal::Signal;
 
-use crate::theme::M3Theme;
-use crate::style::Color;
 use super::buttons::WindowButtons;
 use super::icon::WindowIcon;
+use crate::style::Color;
+use crate::theme::M3Theme;
 
 // ═══════════════════════ WindowConfig ═══════════════════════
 

@@ -1,12 +1,12 @@
+use super::cancel_path::cancel_path_for_visible;
+use super::ime::request_ime_enable;
+use super::WindowState;
 use crate::core::dirty_registry;
 use crate::core::element::DirtyFlags;
 use crate::core::ElementId;
 use crate::event::action::{Action, ActionKind};
 use crate::event::focus_traversal::Direction;
 use crate::event::FocusReason;
-use super::cancel_path::cancel_path_for_visible;
-use super::ime::request_ime_enable;
-use super::WindowState;
 
 pub(crate) fn dispatch_action(state: &mut WindowState, action: &Action, path: &[ElementId]) {
     let outcome = crate::event::propagation::dispatch_action(
@@ -77,7 +77,9 @@ pub(crate) fn dispatch_action(state: &mut WindowState, action: &Action, path: &[
                     if let Some(text) = state.event_registry.fire_clipboard_copy(fid) {
                         if !text.is_empty() {
                             if let Err(e) = crate::platform::Clipboard.write_text(&text) {
-                                crate::core::error::push_error(crate::core::error::UiError::Clipboard(e));
+                                crate::core::error::push_error(
+                                    crate::core::error::UiError::Clipboard(e),
+                                );
                             }
                         }
                     }
@@ -89,7 +91,9 @@ pub(crate) fn dispatch_action(state: &mut WindowState, action: &Action, path: &[
                     if let Some(text) = state.event_registry.fire_clipboard_copy(fid) {
                         if !text.is_empty() {
                             if let Err(e) = crate::platform::Clipboard.write_text(&text) {
-                                crate::core::error::push_error(crate::core::error::UiError::Clipboard(e));
+                                crate::core::error::push_error(
+                                    crate::core::error::UiError::Clipboard(e),
+                                );
                             }
                         }
                     }
@@ -110,7 +114,9 @@ pub(crate) fn dispatch_action(state: &mut WindowState, action: &Action, path: &[
                         Ok(Some(text)) => state.event_registry.fire_clipboard_paste(fid, text),
                         Ok(None) => {}
                         #[cfg(feature = "clipboard")]
-                        Err(e) => crate::core::error::push_error(crate::core::error::UiError::Clipboard(e)),
+                        Err(e) => crate::core::error::push_error(
+                            crate::core::error::UiError::Clipboard(e),
+                        ),
                         #[cfg(not(feature = "clipboard"))]
                         Err(_) => {} // NotAvailable is expected with the feature off
                     }
@@ -118,9 +124,11 @@ pub(crate) fn dispatch_action(state: &mut WindowState, action: &Action, path: &[
             }
             ActionKind::Undo | ActionKind::Redo => {
                 if let Some(fid) = state.focus_manager.focused() {
-                    if let Some(state_undo) = state.arena.get(fid).and_then(|el| {
-                        el.get_user_data::<crate::core::undo::ElementUndoState>()
-                    }) {
+                    if let Some(state_undo) = state
+                        .arena
+                        .get(fid)
+                        .and_then(|el| el.get_user_data::<crate::core::undo::ElementUndoState>())
+                    {
                         match action.kind {
                             ActionKind::Undo => {
                                 state_undo.undo_all();
@@ -174,10 +182,7 @@ pub(crate) fn invalidate_after_menu_change(state: &mut WindowState) {
     state.needs_taffy = true;
     if let Some(rid) = state.arena.root_id {
         dirty_registry::mark_dirty(rid, DirtyFlags::REPAINT);
-        dirty_registry::register_dirty(
-            rid,
-            DirtyFlags::REPAINT,
-        );
+        dirty_registry::register_dirty(rid, DirtyFlags::REPAINT);
         dirty_registry::bump_subtree_gen(rid);
     }
     if let Some(ref w) = state.winit_window {

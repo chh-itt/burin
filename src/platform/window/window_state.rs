@@ -1,3 +1,9 @@
+use super::action;
+use super::config::WindowConfig;
+use super::drag;
+use super::finger;
+use super::scroll_physics::ScrollKinetic;
+use super::WindowHandle;
 use crate::core::context::MountContext;
 use crate::core::element::{fire_on_mount, ElementArena};
 use crate::core::error::{push_error, GpuErrorKind, UiError};
@@ -15,12 +21,6 @@ use rustc_hash::FxHashMap;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::time::Instant as StdInstant;
-use super::action;
-use super::config::WindowConfig;
-use super::drag;
-use super::finger;
-use super::scroll_physics::ScrollKinetic;
-use super::WindowHandle;
 
 /// Per-window state: arena, renderer, focus, event handling.
 pub(crate) struct WindowState {

@@ -1,3 +1,10 @@
+use super::action;
+use super::finger;
+use super::frame_hook::{SUBMENU_DELAY_MS, SUBMENU_TIMER_KEY};
+use super::ime;
+use super::submenu;
+use super::window_state::WindowState;
+use super::winit_map::{map_mouse_button, map_touch_phase, map_winit_action_key, map_winit_key};
 use crate::core::config::StateFlags;
 use crate::core::dirty_registry;
 use crate::core::element::DirtyFlags;
@@ -8,13 +15,6 @@ use crate::event::FocusReason;
 use crate::style::{Color, Point, Rect, Vec2};
 use crate::theme::M3Theme;
 use std::time::Instant as StdInstant;
-use super::action;
-use super::finger;
-use super::frame_hook::{SUBMENU_DELAY_MS, SUBMENU_TIMER_KEY};
-use super::ime;
-use super::submenu;
-use super::winit_map::{map_mouse_button, map_touch_phase, map_winit_key, map_winit_action_key};
-use super::window_state::WindowState;
 
 impl WindowState {
     pub(crate) fn handle_event(
@@ -218,7 +218,9 @@ impl WindowState {
                                 &self.arena,
                                 eid,
                                 |bundle, vp| match axis {
-                                    crate::widgets::bundle::scroll::ScrollAxis::Vertical if ch > sb.height => {
+                                    crate::widgets::bundle::scroll::ScrollAxis::Vertical
+                                        if ch > sb.height =>
+                                    {
                                         let thumb_h = (sb.height / ch * sb.height).max(20.0);
                                         let trk = sb.height - thumb_h;
                                         let adj = pos.y + ancestor_y - sb.y - gf * thumb_h;
@@ -228,7 +230,9 @@ impl WindowState {
                                         v.y = off;
                                         bundle.set_offset_with_physics(v, vp);
                                     }
-                                    crate::widgets::bundle::scroll::ScrollAxis::Horizontal if cw > sb.width => {
+                                    crate::widgets::bundle::scroll::ScrollAxis::Horizontal
+                                        if cw > sb.width =>
+                                    {
                                         let h_gutter = if ch > sb.height { sbw + 2.0 } else { 0.0 };
                                         let thumb_w = (sb.width / cw * sb.width).max(20.0);
                                         let trk = sb.width - thumb_w - h_gutter;
@@ -246,7 +250,9 @@ impl WindowState {
                             // Fallback: direct ECS write if no ScrollBundle available
                             if !via_bundle {
                                 match axis {
-                                    crate::widgets::bundle::scroll::ScrollAxis::Vertical if ch > sb.height => {
+                                    crate::widgets::bundle::scroll::ScrollAxis::Vertical
+                                        if ch > sb.height =>
+                                    {
                                         let thumb_h = (sb.height / ch * sb.height).max(20.0);
                                         let trk = sb.height - thumb_h;
                                         let adj = pos.y + ancestor_y - sb.y - gf * thumb_h;
@@ -255,11 +261,11 @@ impl WindowState {
                                         let mut v = sc.scroll_offset.get();
                                         v.y = off;
                                         sc.scroll_offset.set(v);
-                                        dirty_registry::spatial_update_scroll(
-                                            eid, v.x, v.y,
-                                        );
+                                        dirty_registry::spatial_update_scroll(eid, v.x, v.y);
                                     }
-                                    crate::widgets::bundle::scroll::ScrollAxis::Horizontal if cw > sb.width => {
+                                    crate::widgets::bundle::scroll::ScrollAxis::Horizontal
+                                        if cw > sb.width =>
+                                    {
                                         let h_gutter = if ch > sb.height { sbw + 2.0 } else { 0.0 };
                                         let thumb_w = (sb.width / cw * sb.width).max(20.0);
                                         let trk = sb.width - thumb_w - h_gutter;
@@ -269,9 +275,7 @@ impl WindowState {
                                         let mut v = sc.scroll_offset.get();
                                         v.x = off;
                                         sc.scroll_offset.set(v);
-                                        dirty_registry::spatial_update_scroll(
-                                            eid, v.x, v.y,
-                                        );
+                                        dirty_registry::spatial_update_scroll(eid, v.x, v.y);
                                     }
                                     _ => {}
                                 }
@@ -640,9 +644,15 @@ impl WindowState {
                                                 self.config.width / self.scale_factor as f32;
                                             let screen_h =
                                                 self.config.height / self.scale_factor as f32;
-                                            let (sub_x, opened_left) =
-                                                submenu::submenu_x(sb.x, sb.width, screen_w, prefer_left);
-                                            let sub_y = submenu::submenu_y(sb.y, sb.height, sub_h, screen_h);
+                                            let (sub_x, opened_left) = submenu::submenu_x(
+                                                sb.x,
+                                                sb.width,
+                                                screen_w,
+                                                prefer_left,
+                                            );
+                                            let sub_y = submenu::submenu_y(
+                                                sb.y, sb.height, sub_h, screen_h,
+                                            );
                                             let sub_pos = Point::new(sub_x, sub_y);
                                             crate::widgets::overlay::open_context_menu(
                                                 sub.0,
@@ -745,8 +755,10 @@ impl WindowState {
                     }
                     let (dx, dy) = match delta {
                         winit::event::MouseScrollDelta::LineDelta(x, y) => (
-                            x * super::scroll_physics::WHEEL_PIXELS_PER_LINE * super::scroll_physics::WHEEL_LINES_PER_NOTCH,
-                            y * super::scroll_physics::WHEEL_PIXELS_PER_LINE * super::scroll_physics::WHEEL_LINES_PER_NOTCH,
+                            x * super::scroll_physics::WHEEL_PIXELS_PER_LINE
+                                * super::scroll_physics::WHEEL_LINES_PER_NOTCH,
+                            y * super::scroll_physics::WHEEL_PIXELS_PER_LINE
+                                * super::scroll_physics::WHEEL_LINES_PER_NOTCH,
                         ),
                         winit::event::MouseScrollDelta::PixelDelta(pos) => {
                             (pos.x as f32, pos.y as f32)
@@ -776,7 +788,8 @@ impl WindowState {
                         winit::event::TouchPhase::Moved => {
                             self.velocity_history.push((dx, dy, now));
                             self.velocity_history.retain(|(_, _, t)| {
-                                now.duration_since(*t).as_millis() < super::scroll_physics::VELOCITY_HISTORY_MAX_MS
+                                now.duration_since(*t).as_millis()
+                                    < super::scroll_physics::VELOCITY_HISTORY_MAX_MS
                             });
                         }
                         winit::event::TouchPhase::Ended => {
@@ -862,9 +875,7 @@ impl WindowState {
                                         let vp = self
                                             .arena
                                             .get(scrollable)
-                                            .map_or(Rect::ZERO, |el| {
-                                                el.screen_bounds
-                                            });
+                                            .map_or(Rect::ZERO, |el| el.screen_bounds);
                                         if let Some((ux, uy)) =
                                             crate::widgets::bundle::scroll::try_scroll_by(
                                                 &self.arena,
@@ -921,9 +932,7 @@ impl WindowState {
                                         let vp = self
                                             .arena
                                             .get(eid)
-                                            .map_or(Rect::ZERO, |el| {
-                                                el.screen_bounds
-                                            });
+                                            .map_or(Rect::ZERO, |el| el.screen_bounds);
                                         crate::widgets::bundle::scroll::try_scroll_by(
                                             &self.arena,
                                             eid,
@@ -1073,7 +1082,8 @@ impl WindowState {
                                         .is_some_and(|d| d.0);
                                         let (sub_x, opened_left) =
                                             submenu::submenu_x(sb.x, sb.width, win_w, prefer_left);
-                                        let sub_y = submenu::submenu_y(sb.y, sb.height, sub_h, win_h);
+                                        let sub_y =
+                                            submenu::submenu_y(sb.y, sb.height, sub_h, win_h);
                                         if let Some(rid) = self.arena.root_id {
                                             crate::widgets::overlay::open_context_menu(
                                                 cmi.0,
@@ -1095,7 +1105,11 @@ impl WindowState {
                                             &mut self.arena,
                                         )
                                     {
-                                        action::transfer_focus(self, parent, FocusReason::Programmatic);
+                                        action::transfer_focus(
+                                            self,
+                                            parent,
+                                            FocusReason::Programmatic,
+                                        );
                                     }
                                     action::invalidate_after_menu_change(self);
                                 }
@@ -1263,15 +1277,12 @@ impl WindowState {
                 // ── Drag & Drop ──
                 winit::event::WindowEvent::DragEntered { paths, position } => {
                     let sf = self.scale_factor;
-                    let pos = Point::new(
-                        position.x as f32 / sf as f32,
-                        position.y as f32 / sf as f32,
-                    );
+                    let pos =
+                        Point::new(position.x as f32 / sf as f32, position.y as f32 / sf as f32);
                     if let Some(hit) = dirty_registry::hit_test_with_fallback(&self.arena, pos) {
                         if let Some(el) = self.arena.get_mut(hit) {
                             if el.drop_target() {
-                                el.state
-                                    .set(el.state.get() | StateFlags::HOVERED);
+                                el.state.set(el.state.get() | StateFlags::HOVERED);
                                 el.mark_repaint();
                             }
                         }
@@ -1280,10 +1291,8 @@ impl WindowState {
                 }
                 winit::event::WindowEvent::DragMoved { position } => {
                     let sf = self.scale_factor;
-                    let pos = Point::new(
-                        position.x as f32 / sf as f32,
-                        position.y as f32 / sf as f32,
-                    );
+                    let pos =
+                        Point::new(position.x as f32 / sf as f32, position.y as f32 / sf as f32);
                     if let Some(hit) = dirty_registry::hit_test_with_fallback(&self.arena, pos) {
                         if let Some(el) = self.arena.get(hit) {
                             if el.drop_target() {
@@ -1294,10 +1303,8 @@ impl WindowState {
                 }
                 winit::event::WindowEvent::DragDropped { paths, position } => {
                     let sf = self.scale_factor;
-                    let pos = Point::new(
-                        position.x as f32 / sf as f32,
-                        position.y as f32 / sf as f32,
-                    );
+                    let pos =
+                        Point::new(position.x as f32 / sf as f32, position.y as f32 / sf as f32);
                     if let Some(hit) = dirty_registry::hit_test_with_fallback(&self.arena, pos) {
                         if let Some(el) = self.arena.get_mut(hit) {
                             if el.drop_target() {

@@ -33,4 +33,6 @@ pub use file_dialog::{
     pick_file, pick_files, pick_folder, save_file, FileDialogBuilder, SelectedFile,
 };
 pub use ime::{compose_ime_surface_rect, ImeState};
-pub use window::{create_window, App, AppBuilder, WindowButtons, WindowConfig, WindowHandle, WindowIcon};
+pub use window::{
+    create_window, App, AppBuilder, WindowButtons, WindowConfig, WindowHandle, WindowIcon,
+};

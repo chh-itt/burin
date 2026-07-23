@@ -2,9 +2,9 @@
 
 use crate::core::error::{panic_to_string, push_error, UiError};
 use crate::core::widget::Widget;
+use raw_window_handle::HasWindowHandle;
 use std::rc::Rc;
 use std::sync::Arc;
-use raw_window_handle::HasWindowHandle;
 use winit::application::ApplicationHandler;
 use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::ControlFlow;

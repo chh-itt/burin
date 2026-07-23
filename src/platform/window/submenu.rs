@@ -4,7 +4,12 @@
 /// ancestor menu. When neither side fits, clamp into the screen — the submenu
 /// stays fully visible; it may overlap the parent (an unavoidable physical
 /// limit, as on Windows).
-pub(crate) fn submenu_x(parent_x: f32, parent_w: f32, screen_w: f32, prefer_left: bool) -> (f32, bool) {
+pub(crate) fn submenu_x(
+    parent_x: f32,
+    parent_w: f32,
+    screen_w: f32,
+    prefer_left: bool,
+) -> (f32, bool) {
     let w = 220.0_f32;
     let gap = 4.0_f32;
     let right_x = parent_x + parent_w + gap;
