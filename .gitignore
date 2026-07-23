@@ -1,0 +1,18 @@
+# Build output
+/target/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# proptest failure-case cache (transient during dev)
+*.proptest-regressions
+
+# Transient debug logs (from local debugging sessions)
+*.log
+
+burin-platform/target/

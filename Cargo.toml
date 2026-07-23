@@ -1,0 +1,311 @@
+[package]
+name = "burin"
+version = "0.1.0"
+edition = "2021"
+description = "A Rust GUI framework built on the auralis reactive signal kernel"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/chh-itt/burin"
+documentation = "https://docs.rs/burin"
+readme = "README.md"
+keywords = ["gui", "reactive", "signal", "wgpu", "retained-mode"]
+categories = ["gui"]
+
+[features]
+lyon = ["dep:lyon"]
+
+default = [
+    "display",
+    "backend-wgpu",
+    "lyon",
+    "text-cosmic",
+    "system-theme",
+    "clipboard",
+    "ext-image",
+    "ext-svg",
+    "global-hotkey",
+    # CPU backend with auto-detect platform support
+    "backend-tiny-skia",
+    "backend-tiny-skia-x11",
+    "backend-tiny-skia-wayland",
+]
+
+# Basic display/monitor information (wraps winit, zero extra dependencies)
+display = []
+
+# Advanced display features (screensaver inhibit, rotation, physical size)
+# Delegates platform-specific FFI to the `burin-platform` crate.
+display-advanced = [
+    "display",
+    "dep:burin-platform",
+    "burin-platform/screensaver",
+    "burin-platform/display",
+]
+
+# Rendering backends
+backend-wgpu = ["dep:wgpu", "dep:raw-window-handle"]
+backend-tiny-skia = [
+    "dep:tiny-skia",
+    "dep:softbuffer",
+    "dep:raw-window-handle",
+    "dep:fontdb",
+]
+
+# Softbuffer Linux platform backends (toggle individually if compilation conflicts)
+backend-tiny-skia-x11 = ["softbuffer/x11", "softbuffer/x11-dlopen"]
+backend-tiny-skia-wayland = ["softbuffer/wayland", "softbuffer/wayland-dlopen"]
+
+# Text rendering
+text-cosmic = ["dep:cosmic-text", "dep:swash", "dep:rustybuzz", "dep:fontdb", "dep:glyphon"]
+
+# i18n
+i18n = ["dep:fluent", "dep:unic-langid", "dep:sys-locale"]
+
+# Platform integration
+tray = ["dep:tray-icon"]
+a11y-platform = ["dep:burin-platform", "burin-platform/accessibility"]
+file-dialog = ["dep:rfd"]
+clipboard = ["dep:arboard"]
+system-theme = ["dep:dark-light"]
+global-hotkey = ["dep:handy-keys"]
+
+# Diagnostics
+tracing = ["dep:tracing"]
+devtools = ["dep:auralis-devtools", "tracing", "dep:tracing-subscriber", "dep:serde"]
+file-logging = ["tracing", "dep:tracing-appender", "dep:tracing-subscriber"]
+
+# Optional extensions
+ext-jiff = ["dep:jiff"]
+ext-image = ["dep:image", "arboard?/image-data"]
+ext-svg = ["dep:resvg", "dep:usvg"]
+ext-audio = ["dep:rodio"]
+
+# SSR (Server-Side Rendering): render widgets to PNG without a window.
+#   Requires CPU backend (tiny-skia) + image crate (PNG encoding).
+#   Usage: render_to_png(my_widget, 800.0, 600.0) -> Vec<u8> (PNG bytes)
+ssr = ["backend-tiny-skia", "dep:image"]
+
+# ── Reserved features (placeholder, no deps yet) ──────────────────
+#
+# embed-assets: compile-time asset embedding (fonts, icons, locales).
+#   Planned: `include_dir!`-based static registry. Currently zero
+#   runtime code — assets are loaded from disk at startup.
+#   Do NOT remove this feature name; third-party code may already
+#   reference it in their own Cargo.toml.
+embed-assets = []
+
+# built-info: embed build timestamp / git hash for version display.
+#   Build script (build.rs) writes to OUT_DIR when enabled; runtime
+#   code that reads `built_info` is not yet wired. Keeping the name
+#   so downstream users don't break when toggling.
+built-info = []
+
+# async-tokio: Tokio-based async executor integration.
+#   Reserved for cross-thread wake bridging via EventLoopProxy.
+#   See docs/perf/audit-2026-07-17-round5.md A4/A1-L3.
+#   Currently zero runtime code — Tokio is not spawned or awaited.
+async-tokio = ["dep:tokio"]
+
+[dependencies]
+# Auralis kernel
+auralis-signal = "0.1.18"
+auralis-task = "0.1.18"
+
+# Color science
+material-colors = "0.4"
+
+# Always required
+winit = "0.31.0-beta.2"
+taffy = "0.12"
+serde = { version = "1", features = ["derive"], optional = true }
+thiserror = "2"
+tracing = { version = "0.1", optional = true }
+tracing-subscriber = { version = "0.3", optional = true, features = ["env-filter"] }
+tracing-appender = { version = "0.2", optional = true }
+kurbo = "0.13"
+lyon = { version = "1.0", optional = true }
+bytemuck = { version = "1", features = ["derive"] }
+rustc-hash = "2"
+pollster = "0.4"
+glam = "0.32"
+web-time = "1.1"
+accesskit = "0.24"
+ropey = "1.6"
+
+# Optional dependencies
+wgpu = { version = "30", optional = true }
+tiny-skia = { version = "0.12", optional = true }
+softbuffer = { version = "0.4", optional = true }
+raw-window-handle = { version = "0.6", optional = true }
+
+cosmic-text = { version = "0.19", optional = true, features = ["shape-run-cache"] }
+glyphon = { version = "0.12", optional = true }
+swash = { version = "0.2", optional = true }
+rustybuzz = { version = "0.20", optional = true }
+fontdb = { version = "0.23", optional = true }
+
+fluent = { version = "0.17", optional = true }
+unic-langid = { version = "0.9", optional = true }
+sys-locale = { version = "0.3", optional = true }
+
+tray-icon = { version = "0.24", optional = true, default-features = false }
+rfd = { version = "0.17", optional = true }
+arboard = { version = "3.6", optional = true, default-features = false }
+dark-light = { version = "2", optional = true }
+handy-keys = { version = "0.3", optional = true }
+
+auralis-devtools = { version = "0.1.18", optional = true }
+tokio = { version = "1", optional = true, default-features = false, features = ["rt-multi-thread"] }
+
+jiff = { version = "0.2", optional = true }
+image = { version = "0.25", optional = true, default-features = false, features = ["png", "jpeg", "gif", "webp"] }
+rodio = { version = "0.22", optional = true }
+resvg = { version = "0.47", optional = true }
+usvg = { version = "0.47", optional = true }
+
+# Platform-specific display-advanced support
+burin-platform = { version = "0.1.0", path = "burin-platform", optional = true }
+
+[build-dependencies]
+built = { version = "0.8", optional = true }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+accesskit_windows = "0.33"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+accesskit_macos = "0.26"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+accesskit_unix = "0.21"
+
+[[example]]
+name = "drag_drop_demo"
+
+[[example]]
+name = "full_gallery"
+
+[[example]]
+name = "full_gallery_cpu"
+
+[[example]]
+name = "animation_gallery"
+
+[[example]]
+name = "multi_window"
+
+[[example]]
+name = "startup_minimal_cpu"
+
+[[example]]
+name = "stress_10k"
+
+[[example]]
+name = "tray_demo"
+required-features = ["tray", "ext-image"]
+
+[[example]]
+name = "image_svg_demo"
+required-features = ["ext-image", "ext-svg"]
+
+[[example]]
+name = "audio_demo"
+required-features = ["ext-audio"]
+
+[[example]]
+name = "i18n_demo"
+required-features = ["i18n"]
+
+[[example]]
+name = "devtools_demo"
+required-features = ["devtools"]
+
+[[example]]
+name = "ssr_demo"
+required-features = ["ssr"]
+
+[dev-dependencies]
+glam = "0.32"
+proptest = "1"
+serde_json = "1"
+
+[lints.clippy]
+too_many_arguments = "allow"
+type_complexity = "allow"
+new_without_default = "allow"
+should_implement_trait = "allow"
+len_without_is_empty = "allow"
+large_enum_variant = "allow"
+unneeded_wildcard_pattern = "allow"
+ptr_arg = "allow"
+empty_line_after_doc_comments = "allow"
+redundant_field_names = "allow"
+# Style / minor — allow for now, tighten later
+manual_clamp = "allow"
+manual_checked_ops = "allow"
+manual_div_ceil = "allow"
+manual_is_multiple_of = "allow"
+collapsible_if = "allow"
+collapsible_match = "allow"
+needless_range_loop = "allow"
+needless_lifetimes = "allow"
+needless_borrow = "allow"
+needless_option_take = "allow"
+redundant_closure = "allow"
+redundant_locals = "allow"
+redundant_pattern_matching = "allow"
+single_match = "allow"
+while_let_loop = "allow"
+unnecessary_cast = "allow"
+unnecessary_map_or = "allow"
+unnecessary_min_or_max = "allow"
+unnecessary_unwrap = "allow"
+unneeded_struct_pattern = "allow"
+unused_enumerate_index = "allow"
+explicit_auto_deref = "allow"
+explicit_counter_loop = "allow"
+let_and_return = "allow"
+question_mark = "allow"
+clone_on_copy = "allow"
+for_kv_map = "allow"
+get_first = "allow"
+bool_comparison = "allow"
+cmp_owned = "allow"
+map_identity = "allow"
+len_zero = "allow"
+if_same_then_else = "allow"
+drop_non_drop = "allow"
+approx_constant = "allow"
+excessive_precision = "allow"
+unwrap_or_default = "allow"
+drain_collect = "allow"
+derivable_impls = "allow"
+assign_op_pattern = "allow"
+missing_const_for_thread_local = "allow"
+doc_lazy_continuation = "allow"
+doc_overindented_list_items = "allow"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+
+# Fast-compile, fast-run profile for benchmarks (opt-level=3, no LTO).
+# Usage: cargo test --profile bench --test perf_regression
+[profile.bench]
+inherits = "dev"
+opt-level = 3
+debug = 1
+lto = false
+strip = false
+
+[profile.dev]
+opt-level = 1
+incremental = true
+
+# Compute-heavy deps get full optimization even in dev — cheap since they
+# rarely recompile.
+[profile.dev.package.taffy]
+opt-level = 3
+
+[profile.dev.package.cosmic-text]
+opt-level = 3

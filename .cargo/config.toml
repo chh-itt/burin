@@ -1,0 +1,5 @@
+# Use the LLVM linker on Windows — rust-lld ships with Rust, no
+# external install required.  5–10× faster than the default MSVC
+# link.exe, especially noticeable for dev builds with many generics.
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld"

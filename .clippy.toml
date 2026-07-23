@@ -1,0 +1,3 @@
+# Clippy configuration for burin — gradually tighten over time.
+too-many-arguments-threshold = 10
+cognitive-complexity-threshold = 30

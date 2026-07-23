@@ -1,0 +1,32 @@
+[package]
+name = "burin-platform"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.80"
+description = "Safe platform FFI wrappers for the burin GUI framework"
+repository = "https://github.com/chh-itt/burin"
+
+[features]
+default = []
+screensaver = ["dep:windows-sys", "dep:core-foundation", "dep:zbus"]
+display = ["dep:core-graphics"]
+accessibility = ["dep:accesskit", "dep:accesskit_macos"]
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.61", optional = true, features = [
+    "Win32_System_Power",
+] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+core-foundation = { version = "0.10", optional = true }
+core-graphics = { version = "0.25", optional = true }
+accesskit_macos = { version = "0.26", optional = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+zbus = { version = "5", optional = true, default-features = false, features = [
+    "blocking-api",
+] }
+
+[dependencies]
+accesskit = { version = "0.24", optional = true }
