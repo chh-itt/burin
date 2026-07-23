@@ -183,20 +183,40 @@ pub fn bind_label_lazy(
     eid: crate::core::ElementId,
     signal: &Signal<String>,
     app: std::rc::Weak<crate::core::app_context::AppContext>,
+    lazy_font_params: Option<Rc<crate::core::element::LazyFontParams>>,
+    measured_width: Option<Rc<std::cell::Cell<f32>>>,
 ) -> String {
     let sig = signal.clone();
     subscribe_owned(eid, signal, move || {
-        let new_val = sig.read();
         let old_gen = text_gen_cell.get();
-        let new_len = new_val.len();
-        label_cell.set(new_val);
-        text_gen_cell.set(old_gen.wrapping_add(1));
+        let new_val_str = {
+            let v = sig.read();
+            label_cell.set(v.clone());
+            text_gen_cell.set(old_gen.wrapping_add(1));
+            v
+        };
+
+        if let (Some(ref lfp), Some(ref mw)) = (&lazy_font_params, &measured_width) {
+            let new_w = crate::render::text::measure_text_width(
+                &new_val_str,
+                lfp.font_size,
+                lfp.font_weight,
+                lfp.font_family.clone(),
+            )
+            .max(lfp.font_size * 2.0);
+            if (mw.get() - new_w).abs() > 0.5 {
+                mw.set(new_w);
+                crate::core::element::with_ct_mut(|ct| {
+                    ct.layout.entry(eid).or_default().preferred_width = Some(new_w);
+                });
+            }
+        }
+
         vgen!(
-            "[VGEN:LAZY_BIND] eid={:?} text_generation: {} -> {} len={}",
+            "[VGEN:LAZY_BIND] eid={:?} text_generation: {} -> {}",
             eid,
             old_gen,
             old_gen.wrapping_add(1),
-            new_len
         );
         let flags = DirtyFlags::REPAINT | DirtyFlags::MEASURE;
         dirty.set(dirty.get() | flags);
