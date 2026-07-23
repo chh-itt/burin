@@ -2,6 +2,8 @@
 
 **一个 Rust GUI 框架，Signal 是唯一的状态。**
 
+*[English](README.md)* | [架构全链路](docs/PIPELINE_zh-CN.md) | [文档索引](docs/README.md)
+
 没有虚拟 DOM。没有 diff。没有依赖图。没有 reconciliation。只有 `Signal<T>` →
 脏标记 → 增量布局 → 子树缓存 → 绘制。
 
@@ -41,8 +43,6 @@ fn main() {
         .unwrap();
 }
 ```
-
-[English](README.md) | [架构全链路](docs/PIPELINE_zh-CN.md) | [文档索引](docs/README.md)
 
 ---
 
@@ -209,6 +209,8 @@ fn main() {
 ```
 
 *Burin 依赖 `winit 0.31`（当前为 beta）。我们持续跟踪上游进展。*
+
+*如果这个项目帮到了你，可以考虑[请我喝杯咖啡](https://ifdian.net/a/chhitt) ([PayPal](https://www.paypal.com/paypalme/chhitt))。*
 
 ---
 

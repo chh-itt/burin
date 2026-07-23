@@ -2,6 +2,8 @@
 
 **A Rust GUI framework where Signal is the only state.**
 
+*[中文](README_zh-CN.md)* | [Pipeline](docs/PIPELINE.md) | [Docs](docs/README.md)
+
 No virtual DOM. No diff. No dependency graph. No reconciliation. Just `Signal<T>` →
 dirty flag → incremental layout → subtree cache → paint.
 
@@ -41,8 +43,6 @@ fn main() {
         .unwrap();
 }
 ```
-
-[中文文档](README_zh-CN.md) | [架构全链路](docs/PIPELINE.md) | [文档索引](docs/README.md)
 
 ---
 
@@ -216,6 +216,8 @@ fn main() {
 ```
 
 *Burin depends on `winit 0.31` (currently in beta). We track upstream closely.*
+
+*If this project helps you, consider [buying me a coffee](https://www.paypal.com/paypalme/chhitt) or [sponsoring via 爱发电](https://ifdian.net/a/chhitt).*
 
 ---
 
