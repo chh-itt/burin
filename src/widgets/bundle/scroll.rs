@@ -451,7 +451,7 @@ impl ScrollBundle {
             if delta == 0.0 {
                 return (pos, 0.0);
             }
-            let desired = pos + delta;
+            let desired = pos - delta;
             let friction_applied = if pos < min || pos > max {
                 pos + physics.apply_user_offset(pos, delta, min, max)
             } else {

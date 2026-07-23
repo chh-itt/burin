@@ -612,9 +612,32 @@ pub fn list_section() -> impl Widget {
                                         .disabled_items(disabled_set.clone())
                                         .reorderable(true)
                                         .on_reorder({
+                                            let it = items.clone();
                                             let rc = reorder_count.clone();
                                             let rd = reorder_display.clone();
-                                            move |_src, _dst| {
+                                            let ds = disabled_set.clone();
+                                            move |src, dst| {
+                                                let mut v: Vec<String> = it.read().to_vec();
+                                                let item = v.remove(src);
+                                                v.insert(dst, item);
+                                                it.set(v);
+
+                                                let mut dis = ds.read().clone();
+                                                let mut next = std::collections::HashSet::new();
+                                                for d in dis.drain() {
+                                                    let new_d = if d == src {
+                                                        dst
+                                                    } else if src < dst && d > src && d <= dst {
+                                                        d - 1
+                                                    } else if src > dst && d >= dst && d < src {
+                                                        d + 1
+                                                    } else {
+                                                        d
+                                                    };
+                                                    next.insert(new_d);
+                                                }
+                                                ds.set(next);
+
                                                 rc.set(rc.read() + 1);
                                                 rd.set(rc.read().to_string());
                                             }
