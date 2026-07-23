@@ -561,6 +561,7 @@ pub fn list_section() -> impl Widget {
         let disabled_set: Signal<std::collections::HashSet<usize>> =
             Signal::new([2, 5, 8, 13].iter().copied().collect());
         let reorder_count = Signal::new(0usize);
+        let reorder_display = Signal::new("0".to_string());
 
         {
             let sd = sel_display.clone();
@@ -611,33 +612,11 @@ pub fn list_section() -> impl Widget {
                                         .disabled_items(disabled_set.clone())
                                         .reorderable(true)
                                         .on_reorder({
-                                            let it = items.clone();
                                             let rc = reorder_count.clone();
-                                            let ds = disabled_set.clone();
-                                            move |src, dst| {
-                                                let mut v: Vec<String> = it.read().to_vec();
-                                                let item = v.remove(src);
-                                                v.insert(dst, item);
-                                                it.set(v);
-
-                                                // Reorder disabled indices so they follow the items.
-                                                let mut dis = ds.read().clone();
-                                                let mut next = std::collections::HashSet::new();
-                                                for d in dis.drain() {
-                                                    let new_d = if d == src {
-                                                        dst
-                                                    } else if src < dst && d > src && d <= dst {
-                                                        d - 1
-                                                    } else if src > dst && d >= dst && d < src {
-                                                        d + 1
-                                                    } else {
-                                                        d
-                                                    };
-                                                    next.insert(new_d);
-                                                }
-                                                ds.set(next);
-
+                                            let rd = reorder_display.clone();
+                                            move |_src, _dst| {
                                                 rc.set(rc.read() + 1);
+                                                rd.set(rc.read().to_string());
                                             }
                                         }),
                                 ),
@@ -647,7 +626,7 @@ pub fn list_section() -> impl Widget {
                         DemoPanel::new()
                             .field("Selected", sel_display.clone())
                             .field("Items", count_display.clone())
-                            .field("Reorders", Signal::new(reorder_count.read().to_string()))
+                            .field("Reorders", reorder_display.clone())
                             .info("Keyboard", "Up/Down/Home/End/Space")
                             .info("Drag", "Hold + drag to reorder")
                             .info("Role", "ListBox (AccessKit)"),
@@ -670,6 +649,8 @@ pub fn table_section() -> impl Widget {
         let disabled_set: Signal<std::collections::HashSet<usize>> =
             Signal::new([2, 5, 8, 13].iter().copied().collect());
         let col_reorder_count = Signal::new(0usize);
+        let rows_display = Signal::new(rows.read().len().to_string());
+        let col_reorder_display = Signal::new("0".to_string());
         let footer_txt = Signal::new(vec!["".into(), "".into(), "".into(), "".into()]);
         {
             let r = rows.clone();
@@ -764,11 +745,14 @@ pub fn table_section() -> impl Widget {
             .push(
                 Button::new("Add row").on_click({
                     let r = rows.clone();
+                    let rd = rows_display.clone();
                     move || {
                         let mut v = r.read().clone();
                         let n = v.len();
                         v.push(format!("Row {}", n + 1));
+                        let new_len = n + 1;
                         r.set(v);
+                        rd.set(new_len.to_string());
                     }
                 })
             )
@@ -859,8 +843,11 @@ pub fn table_section() -> impl Widget {
                                     .columns_reorderable(true)
                                     .on_reorder_column({
                                         let rc = col_reorder_count.clone();
+                                        let crd = col_reorder_display.clone();
                                         move |_src, _dst| {
-                                            rc.set(rc.read() + 1);
+                                            let n = rc.read() + 1;
+                                            rc.set(n);
+                                            crd.set(n.to_string());
                                         }
                                     })
                             )
@@ -868,8 +855,8 @@ pub fn table_section() -> impl Widget {
                     .push(
                         DemoPanel::new()
                             .field("Selected", sel_display.clone())
-                            .field("Rows", Signal::new(rows.read().len().to_string()))
-                            .field("Col swaps", Signal::new(col_reorder_count.read().to_string()))
+                            .field("Rows", rows_display.clone())
+                            .field("Col swaps", col_reorder_display.clone())
                             .info("Keyboard", "Up/Down/Home/End")
                             .info("Drag", "Drag header to reorder columns")
                             .info("Role", "Table (AccessKit)")

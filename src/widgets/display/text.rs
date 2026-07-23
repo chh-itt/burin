@@ -176,17 +176,19 @@ impl Widget for Text {
             if let Some(ref sig) = self.dynamic_signal {
                 let lazy_label = Rc::new(Cell::new(self.content.clone()));
                 let text_gen = element.text_generation().unwrap();
-                element.set_lazy_label(lazy_label.clone());
-                element.set_buffer_gen(Rc::new(Cell::new(1u64)));
-                element.set_measured_text_width(Rc::new(Cell::new(preferred_width)));
-                element.set_lazy_font_params(Rc::new(LazyFontParams {
+                let measured_width = Rc::new(Cell::new(preferred_width));
+                let lazy_fp = Rc::new(LazyFontParams {
                     font_size: fs,
                     line_height: lh,
                     font_weight: fw,
                     font_family: ff.clone(),
                     max_width: buffer_max_width,
                     text_align: element.text_align(),
-                }));
+                });
+                element.set_lazy_label(lazy_label.clone());
+                element.set_buffer_gen(Rc::new(Cell::new(1u64)));
+                element.set_measured_text_width(measured_width.clone());
+                element.set_lazy_font_params(lazy_fp.clone());
                 crate::core::signal_bridge::bind_label_lazy(
                     lazy_label,
                     text_gen,
@@ -194,6 +196,8 @@ impl Widget for Text {
                     id,
                     sig,
                     ctx.app.clone(),
+                    Some(lazy_fp),
+                    Some(measured_width),
                 );
             }
 

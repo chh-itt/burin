@@ -344,16 +344,19 @@ impl Widget for Button {
             if let Some(ref sig) = label_signal {
                 let lazy_label = Rc::new(Cell::new(label.clone()));
                 let text_gen = element.text_generation().unwrap();
-                element.set_lazy_label(lazy_label.clone());
-                element.set_buffer_gen(Rc::new(Cell::new(1u64)));
-                element.set_lazy_font_params(Rc::new(LazyFontParams {
+                let measured_width = Rc::new(Cell::new(0.0));
+                let lazy_fp = Rc::new(LazyFontParams {
                     font_size: style.font_size,
                     line_height: 1.5,
                     font_weight: element.font_weight(),
                     font_family: element.font_family().map(|s| s.to_string()),
                     max_width: None,
                     text_align: element.text_align(),
-                }));
+                });
+                element.set_lazy_label(lazy_label.clone());
+                element.set_buffer_gen(Rc::new(Cell::new(1u64)));
+                element.set_measured_text_width(measured_width.clone());
+                element.set_lazy_font_params(lazy_fp.clone());
                 crate::core::signal_bridge::bind_label_lazy(
                     lazy_label,
                     text_gen,
@@ -361,6 +364,8 @@ impl Widget for Button {
                     id,
                     sig,
                     ctx.app.clone(),
+                    Some(lazy_fp),
+                    Some(measured_width),
                 );
             }
 
