@@ -1,6 +1,6 @@
 # Extensibility
 
-Every subsystem in Burin has open extension points. Nothing is sealed.
+Every subsystem in Burin has open extension points.
 
 ## Widget
 

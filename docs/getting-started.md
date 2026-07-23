@@ -142,6 +142,6 @@ burin = { git = "...", default-features = false, features = [
 
 ## Next Steps
 
-- [The Pipeline](PIPELINE.md) — how Signal becomes pixels
-- [Widget Catalog](widget-catalog.md) — all 60 built-in widgets
-- [Testing](testing.md) — TestHarness headless testing
+- [The Pipeline](PIPELINE.md), which describes how Signal becomes pixels
+- [Widget Catalog](widget-catalog.md), which lists all 60 built-in widgets
+- [Testing](testing.md), which covers TestHarness headless testing

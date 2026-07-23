@@ -5,7 +5,7 @@ layout, with a custom incremental bridge that avoids full-tree recomputation.
 
 ## Dirty Flags
 
-`src/core/element.rs` — Three levels of layout dirty:
+`src/core/element.rs`. Three levels of layout dirty:
 
 ```
 REPAINT    = 0b001   Surface changed (color, border, text). No layout needed.
@@ -15,7 +15,7 @@ MEASURE    = 0b111   Size changed. Taffy full remeasure (both axes).
 
 ## Dirty Propagation
 
-`src/layout/dirty_propagation.rs:11` — `process_dirty_set()`:
+`src/layout/dirty_propagation.rs:11`. `process_dirty_set()`:
 
 1. Collect dirty elements from the global dirty set.
 2. Sort by depth (deepest first).
@@ -37,7 +37,7 @@ MEASURE    = 0b111   Size changed. Taffy full remeasure (both axes).
 ## Layout Boundaries
 
 A widget is a **relayout boundary** when `affected_by_child_size == false`.
-Children's size changes stop at that boundary — the parent and its siblings
+Children's size changes stop at that boundary. The parent and its siblings
 are not re-laid out.
 
 To make a widget a layout boundary:

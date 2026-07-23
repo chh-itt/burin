@@ -12,23 +12,23 @@ Burin doesn't exist because others got it wrong. It exists because we wanted to 
 
 ---
 
-## On Those Who Came Before
+## On those who came before
 
 **Flutter** proved that retained-mode UI with incremental updates works at scale. Its declarative diff paired with relayout and repaint boundaries remains one of the most complete cross-platform GUI architectures ever built. Without Flutter blazing that trail, many of our design decisions would lack a reference point.
 
 **Iced** brought the Elm Architecture into Rust. The `Model → update(Msg) → view()` loop is elegant in the right context, and its type-safe message dispatch is one of the best guarantees Rust can offer.
 
-**Slint** uses a DSL compiler to generate code, with runtime dependency tracking via `Property<T>` — `get()` auto-registers dependencies, `set()` recursively marks downstream bindings dirty with lazy re-evaluation. At the compiler level, constant folding and binding loop detection are performed, but the dependency graph is built and updated at runtime. Under the hood, this mechanism is remarkably similar to Burin's Signal system. The difference: Slint requires a DSL + compiler to generate this code, which gives it multi-language host support (Rust / C++ / JS / Python) and compiler-level static analysis. The cost: UIs must be written in `.slint` files — no pure Rust composition.
+**Slint** uses a DSL compiler to generate code, with runtime dependency tracking via `Property<T>`. `get()` auto-registers dependencies, and `set()` recursively marks downstream bindings dirty with lazy re-evaluation. At the compiler level, constant folding and binding loop detection run, but the dependency graph is built and updated at runtime. Under the hood, this mechanism is similar to Burin's Signal system. The difference: Slint requires a DSL and compiler to generate this code, which gives it multi-language host support (Rust, C++, JS, Python) and compiler-level static analysis. The tradeoff is that UIs must be written in `.slint` files, without pure Rust composition.
 
-**Egui** proved that immediate mode can be blazingly productive for prototypes and tools — zero lifecycle management, zero state synchronization, scripting-like ergonomics.
+**Egui** proved that immediate mode can be productive for prototypes and tools, with no lifecycle management or state synchronization to maintain.
 
-**SolidJS and Leptos** showed that runtime fine-grained reactivity works for the web: no virtual DOM diff, automatic subscription on read, precise notification on write. That insight shaped our thinking deeply.
+**SolidJS and Leptos** showed that runtime fine-grained reactivity works for the web, with automatic subscription on read and precise notification on write, without a virtual DOM diff.
 
 None of these are "competitors." They are explorers on different paths.
 
 ---
 
-## We Chose a Different Path
+## We chose a different path
 
 Burin's core hypothesis is simple:
 
@@ -40,24 +40,24 @@ Slint asks: "How does a compile-time DSL run across multiple languages?"
 
 Burin asks a different question:
 
-> **Rust's ownership, composition, and zero-cost abstractions already suggest a GUI architecture. Build that architecture.**
+> **Rust's ownership, composition, and zero-cost abstractions already suggest a GUI architecture.**
 
 This hypothesis led to three design choices:
 
 ### 1. Signals instead of messages
 
-The Elm Architecture's `update(Msg)` is modular in Elm. In Rust, message enums must be defined centrally — every new widget adds a variant to the same enum, every state change routes through the same `update` function. Elegant for small apps; a single-point coupling nightmare at scale.
+The Elm Architecture's `update(Msg)` is modular in Elm. In Rust, message enums must be defined centrally. Every new widget adds a variant to the same enum, and every state change routes through the same `update` function. What is elegant for small apps becomes a coupling nightmare at scale.
 
 We use `Signal<T>` instead:
 - `Signal::read()` auto-subscribes
 - `Signal::set()` auto-notifies all subscribers
-- When an Element is dropped, subscriptions are cleaned up automatically
+- When an Element is dropped, it cleans up subscriptions automatically
 
-No central message enum. No central `update` function. State lives in individual `Signal`s. UI composition is logic composition.
+There is no central message enum or central `update` function. State lives in individual `Signal`s, and UI composition is logic composition.
 
 ### 2. Reactivity that spans the entire pipeline
 
-SolidJS proved runtime reactivity works for the web. But its tracking ends at DOM operations — the browser's internal layout, painting, and compositing are a black box.
+SolidJS proved runtime reactivity works for the web. But its tracking ends at DOM operations. The browser's internal layout, painting, and compositing are a black box.
 
 Burin's reactive tracking runs through the entire rendering pipeline:
 
@@ -71,11 +71,11 @@ Signal::set()
   → GPU / CPU
 ```
 
-Because we own the entire pipeline, the reactive system doesn't just tell the framework "what changed." It tells the layout engine "which nodes need re-layout," the cache system "which subtrees can be reused," and the paint layer "which regions don't need re-recording."
+Because we own the entire pipeline, the reactive system tells the layout engine which nodes need re-layout, the cache system which subtrees can be reused, and the paint layer which regions do not need re-recording.
 
-This isn't about being clever. It's about **Rust giving us control that browsers will never give web frameworks**.
+This is not about cleverness. It is about Rust giving us control that browsers will never give web frameworks.
 
-### 3. Pure Rust. No DSL. No macro DSL. No code generation.
+### 3. Pure Rust, no DSL, no code generation
 
 Burin UIs are plain Rust function calls:
 
@@ -86,77 +86,75 @@ VStack::new()
     .push(Button::new("Click me").on_click(|| println!("clicked")))
 ```
 
-No template language to learn. No code generation to wait for. Autocomplete, go-to-definition, and refactoring all work out of the box — because the editor sees ordinary Rust code.
+There is no template language to learn and no code generation to wait for. Autocomplete, go-to-definition, and refactoring all work out of the box because the editor sees ordinary Rust code.
 
-This isn't "we hate DSLs." DSLs have immense value in the right context (Slint proved this for embedded). But our bet is: **when the language itself is expressive enough, a DSL's learning cost and tooling fragmentation aren't worth paying.**
-
----
-
-## Auralis: A Reactive Kernel in Rust
-
-Burin's reactivity comes from [Auralis](https://github.com/chh-itt/auralis) — a standalone open-source kernel of three crates with zero platform dependencies.
-
-`auralis-signal` is roughly 1,300 lines at its core. `Signal<T>` is internally `Rc<RefCell<>>` — no dependency graph topological sort, no Clean/Check/Dirty state machine, no arena allocation. Read pushes a subscriber; write iterates and notifies. You can understand the entire implementation over a cup of coffee.
-
-This isn't about "fewer lines is better." It's a bet: **simple means understandable. Understandable means trustworthy. Trustworthy means you can bet your production system on it.**
-
-Auralis is released independently — you can use it for anything, not just GUIs. SSR, CLI tools, game logic, embedded devices. Burin is simply one consumer of Auralis.
+To be clear, DSLs have value in the right context. Slint proved this for embedded. But our bet is that when the language itself is expressive enough, the learning cost and tooling fragmentation of a DSL are not worth paying.
 
 ---
 
-## We Are Not a Replacement
+## Auralis: a reactive kernel in Rust
+
+Burin's reactivity comes from [Auralis](https://github.com/chh-itt/auralis), a standalone open-source kernel of three crates with no platform dependencies.
+
+`auralis-signal` is roughly 1,300 lines at its core. `Signal<T>` is internally `Rc<RefCell<>>`, without dependency graph topological sort, Clean/Check/Dirty state machines, or arena allocation. Read pushes a subscriber; write iterates and notifies. You can understand the entire implementation over a cup of coffee.
+
+This is not about "fewer lines is better." It is a bet: simple means understandable, understandable means trustworthy, and trustworthy means you can bet your production system on it.
+
+Auralis is released independently, so you can use it for anything beyond GUIs, including SSR, CLI tools, game logic, and embedded devices. Burin is one consumer of Auralis.
+
+---
+
+## We are not a replacement
 
 Burin has its sweet spot, and there are places where it's the wrong tool:
 
 **Good fit:**
-- Medium-to-large desktop applications — 60 built-in widgets, Material 3 theming, standard Taffy layout
-- Scenarios needing GPU + CPU fallback — one Painter API, automatic CPU fallback when GPU is unavailable
-- Projects demanding high test coverage — TestHarness makes headless GUI testing feasible
-- Applications needing precise gesture handling — 7 recognizers in a single GestureArena
+- Medium-to-large desktop applications: 60 built-in widgets, Material 3 theming, standard Taffy layout
+- Scenarios needing GPU and CPU fallback: one Painter API, automatic CPU fallback when GPU is unavailable
+- Projects that need high test coverage: TestHarness makes headless GUI testing feasible
+- Applications that need precise gesture handling: 7 recognizers in a single GestureArena
 
 **Not a good fit:**
-- Quick prototypes → Use Egui. Immediate mode's simplicity can't be beaten for throwaway UIs.
-- Embedded / MCU → Slint's compile-time optimization + `#![no_std]` is the right answer.
-- Cross-platform projects with an existing Dart team → Flutter's ecosystem is irreplaceable.
-- Web-first → Dioxus/Tauri's WebView approach is more pragmatic.
+- Quick prototypes: use Egui. Immediate mode is simpler for throwaway UIs.
+- Embedded or MCU: Slint's compile-time optimization and `#![no_std]` support fit better.
+- Cross-platform projects with a Dart team: Flutter's ecosystem is already established.
+- Web-first: Dioxus or Tauri's WebView approach is more practical.
 
 ---
 
-## An Honest Closing
+## An honest closing
 
-We can trace the entire path from `Signal::set()` to GPU command submission and know exactly what changed and what didn't — not because we're more talented, but because **Rust's type system and ownership model provide guarantees that other languages must maintain through sheer engineering effort**:
+We can trace the entire path from `Signal::set()` to GPU command submission and know exactly what changed and what did not. This is not because we are more talented, but because Rust's type system and ownership model provide guarantees that other languages must maintain through sheer engineering effort:
 
-- Who owns subscriptions? What manages their lifecycle? → Rust: `Rc` + `Drop`. No manual tracking.
-- When is state mutable? How is thread safety ensured? → Rust: `Cell`/`RefCell` + `!Send + !Sync`. Compile-time guarantees.
-- How does dirty marking propagate? Can pointers dangle? → Rust: `ElementId` indexing + arena allocation. The borrow checker guards the rest.
+- Who owns subscriptions? What manages their lifecycle? Rust: `Rc` + `Drop` handles it. No manual tracking.
+- When is state mutable? How is thread safety ensured? Rust: `Cell`/`RefCell` + `!Send + !Sync` give compile-time guarantees.
+- How does dirty marking propagate? Can pointers dangle? Rust: `ElementId` indexing and arena allocation. The borrow checker guards the rest.
 
 Maybe following Rust's grain is the right direction. Maybe it isn't. We don't know yet.
 
-Whether that direction is right — time and you will tell.
+Whether that direction is right, you and time will tell.
 
 ---
 
-*Burin is still early. If you'd like to explore what Rust-native GUI should look like together — issues, PRs, or just a conversation — you're welcome.*
+*Burin is still early. If you would like to explore what Rust-native GUI should look like together, whether through issues, PRs, or just a conversation, you are welcome.*
 
 ---
 
-## Postscript: What We Found After Writing This
+## Postscript: what we found after writing this
 
-After drafting this piece, we went back to read the source code of Flutter, Slint, and Xilem — to make sure we hadn't misrepresented them, and to check whether our own claims held up.
+After drafting this piece, we went back to read the source code of Flutter, Slint, and Xilem to make sure we had not misrepresented them, and to check whether our own claims held up.
 
-We found something we didn't expect.
+What we found was unexpected. Flutter's `BuildOwner._dirtyElements` + `PipelineOwner._nodesNeedingLayout`, Slint's `Property<T>` runtime dependency tracking, and our `Signal<T>` + `dirty_registry` all share the same fundamental dirty-marking model beneath the surface: O(1) mark + O(k) process + boundary short-circuit.
 
-Flutter's `BuildOwner._dirtyElements` + `PipelineOwner._nodesNeedingLayout`, Slint's `Property<T>` runtime dependency tracking, and our `Signal<T>` + `dirty_registry` — all three share the same fundamental dirty-marking model beneath the surface: **O(1) mark + O(k) process + boundary short-circuit**.
-
-The difference isn't "who is more advanced." The difference is how each arrived there:
+The difference is not who is more advanced, but how each arrived there:
 - Flutter got there through years of Google engineering and millions of lines of code
 - Slint got there through a DSL compiler that generates `Property<T>`-based code
-- Burin got there with just Rust's `Signal<T>` + ownership + `Drop`, reaching the same architectural quality
+- Burin got there with just Rust's `Signal<T>` + ownership + `Drop`, and reached the same architectural quality
 
-This isn't design cleverness. It's Rust's language capabilities having already paved this road — we simply walked it first.
+This is not about clever design. Rust's language capabilities paved this road, and we walked it first.
 
-If this observation holds up under community scrutiny — then maybe, just maybe, we've stumbled onto a path that was always meant for Rust.
+If this observation holds up under community scrutiny, then maybe we have stumbled onto a path that was always meant for Rust.
 
-We didn't find a shortcut. The shortcut was always there.
+We did not find a shortcut. The shortcut was always there.
 
 *This document and the majority of Burin's source code were co-authored with DeepSeek.*
