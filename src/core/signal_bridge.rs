@@ -219,7 +219,7 @@ pub fn bind_label_lazy(
             old_gen,
             old_gen.wrapping_add(1),
         );
-        let flags = DirtyFlags::REPAINT | DirtyFlags::MEASURE | DirtyFlags::REPOSITION;
+        let flags = DirtyFlags::REPAINT | DirtyFlags::MEASURE;
         dirty.set(dirty.get() | flags);
         if let Some(app) = app.upgrade() {
             app.register_dirty(eid, flags);
