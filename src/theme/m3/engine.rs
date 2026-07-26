@@ -106,6 +106,6 @@ impl SchemeGen {
 }
 
 /// Convert a material-colors Argb to our premultiplied Color.
-pub fn scheme_color_to_rgba(argb: Argb) -> Color {
+pub(crate) fn scheme_color_to_rgba(argb: Argb) -> Color {
     argb_to_color(argb)
 }

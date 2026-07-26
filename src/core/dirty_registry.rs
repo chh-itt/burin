@@ -73,7 +73,7 @@ pub fn register_dirty(id: ElementId, flags: DirtyFlags) {
 /// for every mark/register on that element. Zero cost when unset (env read
 /// once via OnceLock). Invaluable for "who keeps dirtying #N" hunts.
 #[cfg(debug_assertions)]
-pub fn trace_mark_probe(id: ElementId, flags: DirtyFlags, site: &str) {
+pub(crate) fn trace_mark_probe(id: ElementId, flags: DirtyFlags, site: &str) {
     static TRACE_ID: std::sync::OnceLock<Option<u64>> = std::sync::OnceLock::new();
     let target = TRACE_ID.get_or_init(|| {
         std::env::var("AURALIS_TRACE_DIRTY")
@@ -263,7 +263,7 @@ pub fn bounds_of(id: ElementId) -> Option<Rect> {
 /// Read an element's `reactive_visible` cell state, if it carries one.
 /// Test/diagnostic observability for portal popups.
 #[doc(hidden)]
-pub fn reactive_visible_of(id: ElementId) -> Option<bool> {
+pub(crate) fn reactive_visible_of(id: ElementId) -> Option<bool> {
     let app = crate::core::app_context::current_app();
     let reg = app.elements.el_registry.borrow();
     reg.get(&id)
@@ -359,7 +359,7 @@ pub fn subtree_gen_of(id: ElementId) -> u64 {
     crate::core::app_context::current_app().subtree_gen_of(id)
 }
 
-pub fn content_gen_of(id: ElementId) -> u64 {
+pub(crate) fn content_gen_of(id: ElementId) -> u64 {
     subtree_gen_of(id)
 }
 
@@ -386,7 +386,7 @@ pub fn bump_subtree_gen(id: ElementId) {
 /// Convenience: mark element for full repaint — sets dirty flag, registers for processing,
 /// bumps both decor and subtree generations.
 /// Use when an element's visual output has changed and must be re-rendered.
-pub fn mark_widget_repaint(id: ElementId) {
+pub(crate) fn mark_widget_repaint(id: ElementId) {
     mark_dirty(id, DirtyFlags::REPAINT);
     register_dirty(id, DirtyFlags::REPAINT);
     bump_decor_gen_remote(id);
@@ -448,7 +448,7 @@ pub fn set_elinfo_z_index(id: ElementId, v: i32) {
 }
 
 /// Walk up the ancestor chain; returns `true` if `id` or any parent has `slot_inactive == true`.
-pub fn is_slot_inactive_in_ancestry(
+pub(crate) fn is_slot_inactive_in_ancestry(
     id: ElementId,
     arena: &crate::core::element::ElementArena,
 ) -> bool {
@@ -468,7 +468,7 @@ pub fn is_slot_inactive_in_ancestry(
 /// Walk the ancestor chain; returns `true` if `id` or any ancestor has
 /// `reactive_visible == false` (portal/popup is closed). Used by the
 /// frame_tick pass to avoid running ticks on hidden overlay content.
-pub fn is_reactive_hidden_in_ancestry(id: ElementId) -> bool {
+pub(crate) fn is_reactive_hidden_in_ancestry(id: ElementId) -> bool {
     let app = crate::core::app_context::current_app();
     let reg = app.elements.el_registry.borrow();
     let mut cur = Some(id);
@@ -502,7 +502,7 @@ pub fn has_state(id: ElementId, flag: StateFlags) -> bool {
 
 /// Walk up the ancestor chain; returns `true` if `id` or any parent has `StateFlags::DISABLED`.
 /// Used by pointer handlers to suppress HOVERED/PRESSED on disabled subtrees.
-pub fn is_element_or_ancestor_disabled(id: ElementId) -> bool {
+pub(crate) fn is_element_or_ancestor_disabled(id: ElementId) -> bool {
     if has_state(id, StateFlags::DISABLED) {
         return true;
     }
@@ -517,7 +517,7 @@ pub fn is_element_or_ancestor_disabled(id: ElementId) -> bool {
 }
 
 /// O(1) sync accepts_mouse into EL_REGISTRY. Called from Element::set_accepts_mouse.
-pub fn set_elinfo_accepts_mouse(id: ElementId, v: bool) {
+pub(crate) fn set_elinfo_accepts_mouse(id: ElementId, v: bool) {
     let app = crate::core::app_context::current_app();
     let mut guard = app.elements.el_registry.borrow_mut();
     if let Some(info) = guard.get_mut(&id) {
@@ -526,7 +526,8 @@ pub fn set_elinfo_accepts_mouse(id: ElementId, v: bool) {
 }
 
 /// O(1) sync input_pass_through into EL_REGISTRY. Called from Element::set_input_pass_through.
-pub fn set_elinfo_input_pass_through(id: ElementId, v: bool) {
+#[allow(dead_code)]
+pub(crate) fn set_elinfo_input_pass_through(id: ElementId, v: bool) {
     let app = crate::core::app_context::current_app();
     let mut guard = app.elements.el_registry.borrow_mut();
     if let Some(info) = guard.get_mut(&id) {
@@ -584,7 +585,7 @@ pub fn unregister_focusable(eid: ElementId, tab_index: Option<usize>, tree_order
 }
 
 /// Sync tab_index into ElInfo for focus-order cleanup at unregister time.
-pub fn set_elinfo_tab_index(eid: ElementId, v: Option<usize>) {
+pub(crate) fn set_elinfo_tab_index(eid: ElementId, v: Option<usize>) {
     let app = crate::core::app_context::current_app();
     let guard = app.elements.el_registry.borrow();
     if let Some(info) = guard.get(&eid) {
@@ -594,7 +595,7 @@ pub fn set_elinfo_tab_index(eid: ElementId, v: Option<usize>) {
 
 /// Sync reactive_visible into ElInfo so `is_visible_chain_fast` can
 /// read it directly instead of going through ComponentTables.
-pub fn set_elinfo_reactive_visible(eid: ElementId, v: std::rc::Rc<std::cell::Cell<bool>>) {
+pub(crate) fn set_elinfo_reactive_visible(eid: ElementId, v: std::rc::Rc<std::cell::Cell<bool>>) {
     let app = crate::core::app_context::current_app();
     let mut guard = app.elements.el_registry.borrow_mut();
     if let Some(info) = guard.get_mut(&eid) {
@@ -605,7 +606,7 @@ pub fn set_elinfo_reactive_visible(eid: ElementId, v: std::rc::Rc<std::cell::Cel
 /// Ensure focus order is cached and return it. O(k) from BTreeSet, O(1) cached.
 /// The BTreeSet is now maintained incrementally by `register_focusable` /
 /// `unregister_focusable` — no full-tree scan is ever needed.
-pub fn ensure_focus_order(_arena: &crate::core::element::ElementArena) -> Vec<ElementId> {
+pub(crate) fn ensure_focus_order(_arena: &crate::core::element::ElementArena) -> Vec<ElementId> {
     let app = crate::core::app_context::current_app();
     if app.focus_order_valid() {
         return app.focus_order_cached();
@@ -617,7 +618,8 @@ pub fn ensure_focus_order(_arena: &crate::core::element::ElementArena) -> Vec<El
 }
 
 /// Focus order from cached list + current focus element.
-pub fn focus_order_from_cached(
+#[allow(dead_code)]
+pub(crate) fn focus_order_from_cached(
     arena: &crate::core::element::ElementArena,
     current: Option<ElementId>,
 ) -> (Vec<ElementId>, usize) {
@@ -730,7 +732,7 @@ pub(crate) fn read_pos_offset(
 /// so the cache is lazily invalidated: the first hit-test after any scroll
 /// change pays O(depth); subsequent hit-tests are O(1) until the next
 /// scroll change.
-pub fn accumulated_scroll_cached(
+pub(crate) fn accumulated_scroll_cached(
     arena: &crate::core::element::ElementArena,
     eid: ElementId,
 ) -> (f32, f32) {
@@ -847,7 +849,7 @@ mod debug_stats {
 }
 
 #[cfg(debug_assertions)]
-pub use debug_stats::{
+pub(crate) use debug_stats::{
     hittest_leaf_fallback_count, inc_dirty_count, inc_hittest_leaf_fallback, inc_process_step,
     reset as reset_stats, snapshot as stats,
 };
@@ -877,7 +879,7 @@ mod devtools_dirty_counter {
 
 /// Increment the DevTools dirty counter. Called from dirty propagation.
 #[cfg(feature = "devtools")]
-pub fn inc_devtools_dirty() {
+pub(crate) fn inc_devtools_dirty() {
     devtools_dirty_counter::inc();
 }
 
@@ -895,7 +897,7 @@ pub fn devtools_reset_dirty() {
 
 // Stub for non-devtools builds
 #[cfg(not(feature = "devtools"))]
-pub fn inc_devtools_dirty() {}
+pub(crate) fn inc_devtools_dirty() {}
 #[cfg(not(feature = "devtools"))]
 pub fn devtools_dirty_count() -> usize {
     0
@@ -962,11 +964,11 @@ impl DirtyTriggerTag {
     }
 }
 
-pub fn set_current_trigger(tag: DirtyTriggerTag) {
+pub(crate) fn set_current_trigger(tag: DirtyTriggerTag) {
     CURRENT_TRIGGER.with(|c| c.set(tag));
 }
 
-pub fn current_trigger() -> DirtyTriggerTag {
+pub(crate) fn current_trigger() -> DirtyTriggerTag {
     CURRENT_TRIGGER.with(|c| c.get())
 }
 
@@ -994,7 +996,8 @@ pub(crate) fn record_dirty_event(id: ElementId, flags: DirtyFlags) {
     });
 }
 
-pub fn drain_dirty_events_raw() -> Vec<(ElementId, DirtyFlags, u64, DirtyTriggerTag)> {
+#[allow(dead_code)]
+pub(crate) fn drain_dirty_events_raw() -> Vec<(ElementId, DirtyFlags, u64, DirtyTriggerTag)> {
     if !DIRTY_TRACE_ENABLED.with(|c| c.get()) {
         return Vec::new();
     }

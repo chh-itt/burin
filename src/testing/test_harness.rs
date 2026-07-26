@@ -488,7 +488,7 @@ impl TestHarness {
     }
 
     /// Raw PointerDown at a position — full production event flow (hit
-    /// test → gesture arena → propagation). Pair with [`pointer_up_at`]
+    /// test → gesture arena → propagation). Pair with `pointer_up_at`
     /// to test press-hold-release sequences (long-press, drag arbitration)
     /// with virtual-clock time between the two.
     pub fn pointer_down_at(&mut self, pos: Point) -> &mut Self {
@@ -529,7 +529,7 @@ impl TestHarness {
 
     /// Raw PointerMove at a position — full production event flow (hit
     /// test → gesture arena → propagation). Completes the
-    /// [`pointer_down_at`] / [`pointer_up_at`] trio for gesture testing.
+    /// `pointer_down_at` / `pointer_up_at` trio for gesture testing.
     pub fn pointer_move_at(&mut self, pos: Point) -> &mut Self {
         let hit = dirty_registry::hit_test_with_fallback(&self.arena, pos);
         if let Some(hit_id) = hit {
@@ -557,7 +557,7 @@ impl TestHarness {
         self
     }
 
-    /// Raw PointerUp at a position — completes a [`pointer_down_at`]
+    /// Raw PointerUp at a position — completes a `pointer_down_at`
     /// sequence through the production event flow.
     pub fn pointer_up_at(&mut self, pos: Point) -> &mut Self {
         let hit = dirty_registry::hit_test_with_fallback(&self.arena, pos);
@@ -596,7 +596,7 @@ impl TestHarness {
     }
 
     /// Raw touch-down at a position (finger_id = 1): the touch twin of
-    /// [`pointer_down_at`]. Touch pointers activate touch-only arena
+    /// `pointer_down_at`. Touch pointers activate touch-only arena
     /// members (ScrollRecognizer).
     pub fn touch_down_at(&mut self, pos: Point) -> &mut Self {
         self.pointer_event_at(pos, TouchSim::Down);

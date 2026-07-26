@@ -15,6 +15,7 @@ use crate::style::{
 };
 use std::rc::Rc;
 
+/// Whether flex children wrap to the next line when they overflow.
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum FlexWrap {
     NoWrap,
@@ -22,6 +23,7 @@ pub enum FlexWrap {
     WrapReverse,
 }
 
+/// How content that exceeds the element's bounds is handled.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum Overflow {
@@ -30,6 +32,7 @@ pub enum Overflow {
     Scroll,
 }
 
+/// How screen-reader announcements are handled for dynamic content.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub enum AriaLive {
     #[default]
@@ -38,6 +41,7 @@ pub enum AriaLive {
     Assertive,
 }
 
+/// When scrollbars are visible on a scrollable container.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ScrollbarPolicy {
     Always,
@@ -45,6 +49,10 @@ pub enum ScrollbarPolicy {
     Never,
 }
 
+/// Interaction state bitmask for widgets.
+///
+/// Tracks hover, press, focus, disabled, loading, and other states.
+/// Used by the theme system to resolve dynamic styles.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub struct StateFlags(pub(crate) u16);
@@ -89,6 +97,10 @@ impl std::ops::BitOrAssign for StateFlags {
     }
 }
 
+/// Taffy layout properties for an element.
+///
+/// Controls size, padding, margin, flex behaviour, overflow, alignment,
+/// grid columns, and scrollbar visibility.  Passed to [`ElementBuilder`].
 #[derive(Debug, Clone)]
 pub struct LayoutConfig {
     pub width: Dimension,
@@ -147,20 +159,13 @@ impl Default for LayoutConfig {
 /// Declarative event handler collection.
 ///
 /// Replaces ad-hoc `reg.on_click()` / `reg.register_drag_update()` / `Sense`
-/// patterns with a single struct that is consumed by `ElementBuilder::build()`
-/// and automatically registered with the `EventRegistry`.
+/// A collection of event callbacks for a widget.
 ///
-/// ## Usage
-/// ```ignore
-/// let events = EventHandler::new()
-///     .on_click(move || signal.set(true))
-///     .on_hover_enter(move || signal.set(true));
+/// Each field is an optional closure.  When the widget receives an event
+/// of the matching kind, the closure fires.  All fields default to `None`.
 ///
-/// let interaction = InteractionConfig {
-///     events: Some(events),
-///     ..InteractionConfig::default()
-/// };
-/// ```
+/// Build with [`EventHandler::new`] and the builder methods, then pass
+/// through [`ElementBuilder::interaction`].
 #[derive(Default)]
 pub struct EventHandler {
     pub on_click: Option<Box<dyn Fn()>>,
@@ -433,6 +438,10 @@ impl EventHandler {
     }
 }
 
+/// Interaction and focus configuration for a widget.
+///
+/// Wraps an optional [`EventHandler`] plus properties for focusability,
+/// autofocus, cursor, drag-and-drop, input validation, and event blocking.
 pub struct InteractionConfig {
     /// Declarative event handlers — automatically registered during `ElementBuilder::build()`.
     pub events: Option<EventHandler>,
@@ -499,6 +508,10 @@ impl Default for InteractionConfig {
     }
 }
 
+/// Accessibility properties for a widget.
+///
+/// Carries an AccessKit role and an optional accessible label.  These
+/// are pushed to the platform accessibility tree every frame.
 pub struct AccessibilityConfig {
     pub role: accesskit::Role,
     pub label: Option<String>,
@@ -513,6 +526,10 @@ impl Default for AccessibilityConfig {
     }
 }
 
+/// Visual paint properties for a widget.
+///
+/// Covers background, borders, outline, corner radius, opacity,
+/// blend mode, shadow, gradient, and text styling.
 pub struct PaintConfig {
     pub background: Option<Color>,
     pub foreground: Option<Color>,
@@ -566,6 +583,12 @@ impl Default for PaintConfig {
     }
 }
 
+/// Declarative element construction helper.
+///
+/// Collects layout, paint, interaction, and accessibility configuration
+/// and applies them all to a freshly allocated element in one call to
+/// [`build`](Self::build).  Most widgets create an `ElementBuilder` in
+/// their `mount_box` implementation.
 pub struct ElementBuilder {
     layout: LayoutConfig,
     interaction: InteractionConfig,
@@ -597,7 +620,7 @@ impl ElementBuilder {
     }
 
     /// Declare which ECS components this element uses.
-    /// Components declared here are pre-allocated during [`build`],
+    /// Components declared here are pre-allocated during `build`,
     /// ensuring the element is visible to O(k) component-filtered
     /// queries from the moment of creation.
     ///

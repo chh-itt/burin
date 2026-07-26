@@ -14,6 +14,10 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::style::{Color, Dimension, Padding};
 use crate::theme::m3::roles::{ComponentRole, InteractiveRole, ResolvedComponentStyle};
 
+/// A horizontal or vertical slider for selecting a value in a range.
+///
+/// Backed by a `Signal<f32>`.  Use `.min()`, `.max()`, and `.step()`
+/// to configure the range.  Supports keyboard arrow adjustments.
 pub struct Slider {
     value: auralis_signal::Signal<f32>,
     min: f32,

@@ -3,6 +3,7 @@ use crate::core::widget::Widget;
 use crate::core::ElementId;
 use crate::ecs::components;
 
+/// An empty widget that takes available flex space.
 pub struct Spacer;
 
 impl Spacer {

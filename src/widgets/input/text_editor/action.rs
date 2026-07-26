@@ -4,7 +4,7 @@ use cosmic_text::Buffer;
 use ropey::Rope;
 
 /// Dispatch an Action to EditorState. Returns Consumed if handled.
-pub fn handle_action(
+pub(crate) fn handle_action(
     state: &mut EditorState,
     action: &Action,
     buffer: &mut Buffer,

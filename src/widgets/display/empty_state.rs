@@ -6,6 +6,7 @@ use crate::style::styled::Styled;
 use crate::widgets::display::{Icon, Text};
 use crate::widgets::layout::{Center, VStack};
 
+/// A placeholder for empty lists or no results.
 pub struct EmptyState {
     icon: Option<Icon>,
     title: String,

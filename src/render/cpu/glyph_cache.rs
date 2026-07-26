@@ -2,14 +2,15 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 #[derive(Hash, PartialEq, Eq, Clone, Copy)]
-pub struct WidthKey {
+pub(crate) struct WidthKey {
     pub font_id: fontdb::ID,
     pub glyph_id: u16,
     pub size_bits: u16,
 }
 
 impl WidthKey {
-    pub fn new(font_id: fontdb::ID, glyph_id: u16, size_bits: u16) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn new(font_id: fontdb::ID, glyph_id: u16, size_bits: u16) -> Self {
         Self {
             font_id,
             glyph_id,
@@ -19,7 +20,8 @@ impl WidthKey {
 }
 
 #[derive(Clone)]
-pub struct GlyphMetrics {
+#[allow(dead_code)]
+pub(crate) struct GlyphMetrics {
     pub advance_x: f32,
     pub x0: f32,
     pub y0: f32,
@@ -28,7 +30,7 @@ pub struct GlyphMetrics {
 }
 
 #[derive(Hash, PartialEq, Eq, Clone, Copy)]
-pub struct BitmapKey {
+pub(crate) struct BitmapKey {
     pub font_id: fontdb::ID,
     pub glyph_id: u16,
     pub size_bits: u16,
@@ -36,7 +38,12 @@ pub struct BitmapKey {
 }
 
 impl BitmapKey {
-    pub fn new(font_id: fontdb::ID, glyph_id: u16, size_bits: u16, color_rgb: [u8; 3]) -> Self {
+    pub(crate) fn new(
+        font_id: fontdb::ID,
+        glyph_id: u16,
+        size_bits: u16,
+        color_rgb: [u8; 3],
+    ) -> Self {
         Self {
             font_id,
             glyph_id,
@@ -46,14 +53,15 @@ impl BitmapKey {
     }
 }
 
-pub struct CachedGlyph {
+pub(crate) struct CachedGlyph {
     pub pixmap: Rc<tiny_skia::Pixmap>,
     pub left: i32,
     pub top: i32,
     pub color_rgb: [u8; 3],
 }
 
-pub struct GlyphCache {
+pub(crate) struct GlyphCache {
+    #[allow(dead_code)]
     width_cache: HashMap<WidthKey, GlyphMetrics>,
     bitmap_cache: HashMap<BitmapKey, CachedGlyph>,
     bitmap_bytes: u64,
@@ -64,7 +72,7 @@ impl GlyphCache {
     #[allow(dead_code)]
     const TRIM_INTERVAL: u64 = 300;
 
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             width_cache: HashMap::new(),
             bitmap_cache: HashMap::new(),
@@ -72,7 +80,8 @@ impl GlyphCache {
         }
     }
 
-    pub fn measure(
+    #[allow(dead_code)]
+    pub(crate) fn measure(
         &mut self,
         font_id: fontdb::ID,
         glyph_id: u16,
@@ -88,7 +97,7 @@ impl GlyphCache {
         Some(m)
     }
 
-    pub fn rasterize(
+    pub(crate) fn rasterize(
         &mut self,
         font_id: fontdb::ID,
         glyph_id: u16,
@@ -133,13 +142,13 @@ impl GlyphCache {
         }
     }
 
-    pub fn trim(&mut self, _frame_count: u64) {
+    pub(crate) fn trim(&mut self, _frame_count: u64) {
         if self.bitmap_bytes > Self::MAX_BITMAP_BYTES {
             self.purge_half();
         }
     }
 
-    pub fn clear_bitmaps(&mut self) {
+    pub(crate) fn clear_bitmaps(&mut self) {
         self.bitmap_cache.clear();
         self.bitmap_bytes = 0;
     }

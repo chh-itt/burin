@@ -1,9 +1,7 @@
 pub mod scroll_physics;
 pub mod simulation;
 
-pub use simulation::BouncingScrollSimulation;
 pub use simulation::ClampedSimulation;
-pub use simulation::ClampingScrollSimulation;
 pub use simulation::ConstantDecelSim;
 pub use simulation::FrictionSimulation;
 pub use simulation::Simulation;

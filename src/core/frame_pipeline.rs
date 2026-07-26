@@ -49,7 +49,7 @@ pub fn current_phase() -> FramePhase {
     crate::core::app_context::current_app().current_phase()
 }
 
-pub fn debug_assert_phase(allowed: &[FramePhase]) {
+pub(crate) fn debug_assert_phase(allowed: &[FramePhase]) {
     let current = current_phase();
     debug_assert!(
         allowed.contains(&current),
@@ -68,7 +68,7 @@ thread_local! { static INCREMENTAL_TAKEN: std::cell::Cell<u64> = const { std::ce
 
 /// Number of times `layout_phase` took the incremental (relayout-boundary) path.
 /// Test/diagnostic hook only.
-pub fn incremental_taken_count() -> u64 {
+pub(crate) fn incremental_taken_count() -> u64 {
     INCREMENTAL_TAKEN.with(|c| c.get())
 }
 
@@ -76,17 +76,18 @@ thread_local! { static ESCALATION_TAKEN: std::cell::Cell<u64> = const { std::cel
 
 /// Number of times the incremental path was tried but escalated to a full pass
 /// (a single-axis boundary's dependent-axis size changed). Test/diagnostic hook.
-pub fn escalation_taken_count() -> u64 {
+pub(crate) fn escalation_taken_count() -> u64 {
     ESCALATION_TAKEN.with(|c| c.get())
 }
 
 /// Whether relayout-boundary incremental layout is enabled for this thread (default: true).
-pub fn incremental_layout_enabled() -> bool {
+pub(crate) fn incremental_layout_enabled() -> bool {
     INCREMENTAL_LAYOUT.with(|c| c.get())
 }
 
 /// Enable/disable relayout-boundary incremental layout (test hook).
-pub fn set_incremental_layout_enabled(v: bool) {
+#[allow(dead_code)]
+pub(crate) fn set_incremental_layout_enabled(v: bool) {
     INCREMENTAL_LAYOUT.with(|c| c.set(v));
 }
 
@@ -96,35 +97,35 @@ thread_local! { static SUBTREE_CACHE_MISSES: std::cell::Cell<u64> = const { std:
 
 /// Reset the per-frame paint-cache counters. Called at the top of each frame
 /// (`drive_frame_layout`), so the values reflect a single frame's paint.
-pub fn reset_paint_cache_stats() {
+pub(crate) fn reset_paint_cache_stats() {
     SUBTREE_CACHE_HITS.with(|c| c.set(0));
     SUBTREE_CACHE_MISSES.with(|c| c.set(0));
 }
 
 /// Record a subtree-cache replay (O(k) paint win). Called from `try_skip_subtree`.
-pub fn bump_subtree_cache_hit() {
+pub(crate) fn bump_subtree_cache_hit() {
     SUBTREE_CACHE_HITS.with(|c| c.set(c.get() + 1));
 }
 
 /// Record a subtree-cache miss (re-record). Called from `try_skip_subtree`.
-pub fn bump_subtree_cache_miss() {
+pub(crate) fn bump_subtree_cache_miss() {
     SUBTREE_CACHE_MISSES.with(|c| c.set(c.get() + 1));
 }
 
 /// Number of subtree-cache replays in the most recent frame. Test/diagnostic hook.
-pub fn subtree_cache_hits() -> u64 {
+pub(crate) fn subtree_cache_hits() -> u64 {
     SUBTREE_CACHE_HITS.with(|c| c.get())
 }
 
 /// Number of subtree-cache misses (re-records) in the most recent frame.
-pub fn subtree_cache_misses() -> u64 {
+pub(crate) fn subtree_cache_misses() -> u64 {
     SUBTREE_CACHE_MISSES.with(|c| c.get())
 }
 
 /// Run the O(k) pre-passes that are pure arena operations
 /// (cursor blink, gesture timeouts, frame ticks, scroll simulations,
 /// overlay pop, sticky header).
-pub fn run_pre_passes(arena: &ElementArena) {
+pub(crate) fn run_pre_passes(arena: &ElementArena) {
     let _prev = crate::core::dirty_registry::current_trigger();
     crate::core::dirty_registry::set_current_trigger(
         crate::core::dirty_registry::DirtyTriggerTag::FrameTick,
@@ -142,7 +143,11 @@ pub fn run_pre_passes(arena: &ElementArena) {
 /// check exit_pending flags. `now` is the clock source — both callers pass
 /// `crate::core::clock::now()` so the path is identical (wall-clock in
 /// production, virtual clock under test).
-pub fn animation_phase(arena: &mut ElementArena, animations: &mut AnimationDriver, now: Instant) {
+pub(crate) fn animation_phase(
+    arena: &mut ElementArena,
+    animations: &mut AnimationDriver,
+    now: Instant,
+) {
     for req in crate::animation::drain_exit_requests() {
         if let Some(el) = arena.get_mut(req.target) {
             el.animate_exit(req.property, req.to, req.animation);
@@ -162,7 +167,7 @@ pub fn animation_phase(arena: &mut ElementArena, animations: &mut AnimationDrive
 /// After the animation tick, re-drain dirty entries and re-process them —
 /// animations call `mark_repaint`, producing dirty flags that must be
 /// propagated to ancestors (and the root) so the frame actually paints them.
-pub fn recheck_dirty_phase(
+pub(crate) fn recheck_dirty_phase(
     arena: &ElementArena,
     root_id: ElementId,
     paint_roots: &mut Vec<ElementId>,
@@ -185,7 +190,7 @@ pub fn recheck_dirty_phase(
 }
 
 /// Outcome of the dirty processing phase — consumed by layout + paint decisions.
-pub struct DirtyOutcome {
+pub(crate) struct DirtyOutcome {
     pub paint_roots: Vec<ElementId>,
     pub has_measure: bool,
     pub processed_all: Vec<ElementId>,
@@ -196,7 +201,7 @@ pub struct DirtyOutcome {
 /// Drain dirty entries, process the dirty set, determine root flags.
 /// The multi-window filter is included — for harness (single arena) the
 /// "other" partition is always empty (a harmless no-op).
-pub fn process_dirty_phase(arena: &ElementArena, root_id: ElementId) -> DirtyOutcome {
+pub(crate) fn process_dirty_phase(arena: &ElementArena, root_id: ElementId) -> DirtyOutcome {
     // Multi-window filter: entries whose elements belong to another
     // window's arena are parked in the foreign bucket; App::about_to_wait
     // redistributes them to (and wakes) the owning window. Never push
@@ -264,7 +269,7 @@ pub fn process_dirty_phase(arena: &ElementArena, root_id: ElementId) -> DirtyOut
 /// repaint on elements it visits, but some elements in `processed_all`
 /// may be cache-skipped — this catch-all flush prevents stale flags
 /// from persisting across frames.
-pub fn clear_dirty_phase(processed_all: &[ElementId]) {
+pub(crate) fn clear_dirty_phase(processed_all: &[ElementId]) {
     dirty_registry::clear_dirty_in_set(processed_all, DirtyFlags::REPAINT);
     dirty_registry::clear_dirty_in_set(processed_all, DirtyFlags::MEASURE_BIT);
     dirty_registry::clear_dirty_in_set(processed_all, DirtyFlags::REPOSITION_BIT);
@@ -280,7 +285,7 @@ pub fn clear_dirty_phase(processed_all: &[ElementId]) {
 /// concerns (window's `needs_taffy`, drag ghost, portal positioning,
 /// apply_drag_layouts) stay in the caller.
 #[allow(clippy::too_many_arguments)]
-pub fn layout_phase(
+pub(crate) fn layout_phase(
     arena: &mut ElementArena,
     taffy: &mut TaffyBridge,
     events: &mut EventRegistry,

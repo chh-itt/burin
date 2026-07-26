@@ -6,7 +6,7 @@ use crate::style::{Rect, Vec2};
 use cosmic_text::Buffer;
 
 /// Compute display text: applies password masking, composition inline, placeholder.
-pub fn display_text(state: &EditorState) -> String {
+pub(crate) fn display_text(state: &EditorState) -> String {
     let text = state.text_for_display();
     if text.is_empty() && state.composition.is_none() {
         return state.config.placeholder.clone();
@@ -32,7 +32,7 @@ pub fn display_text(state: &EditorState) -> String {
 }
 
 /// Build shaped text buffer from display text.
-pub fn build_buffer(
+pub(crate) fn build_buffer(
     display: &str,
     config: &TextInputConfig,
     width: f32,
@@ -202,7 +202,8 @@ fn byte_to_x(run: &cosmic_text::LayoutRun, byte_index: usize) -> f32 {
 }
 
 /// Compute IME composition underline rect.
-pub fn composition_underline_rect(
+#[allow(dead_code)]
+pub(crate) fn composition_underline_rect(
     buffer: &Buffer,
     text: &str,
     comp_range: (usize, usize),
@@ -229,7 +230,7 @@ pub fn composition_underline_rect(
 }
 
 /// Auto-scroll to keep cursor in view.
-pub fn auto_scroll(
+pub(crate) fn auto_scroll(
     cursor_x: f32,
     cursor_row: usize,
     row_h: f32,

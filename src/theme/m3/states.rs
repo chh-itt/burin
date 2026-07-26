@@ -7,7 +7,7 @@ use crate::style::Color;
 
 /// All interaction states for a single intent color.
 #[derive(Clone, Debug)]
-pub struct IntentStates {
+pub(crate) struct IntentStates {
     pub filled: VariantStates,
     pub outlined: VariantStates,
     pub text: VariantStates,
@@ -15,7 +15,7 @@ pub struct IntentStates {
 
 /// Interaction states for one appearance variant.
 #[derive(Clone, Debug)]
-pub struct VariantStates {
+pub(crate) struct VariantStates {
     pub base: LayerColor,
     pub hover: LayerColor,
     pub pressed: LayerColor,
@@ -24,7 +24,7 @@ pub struct VariantStates {
 
 /// Fully resolved color pair for a single interaction layer.
 #[derive(Clone, Copy, Debug)]
-pub struct LayerColor {
+pub(crate) struct LayerColor {
     pub background: Color,
     pub foreground: Color,
     pub border: Option<Color>,
@@ -32,7 +32,7 @@ pub struct LayerColor {
 
 /// Global disabled color set.
 #[derive(Clone, Debug)]
-pub struct DisabledColors {
+pub(crate) struct DisabledColors {
     pub background: Color,
     pub foreground: Color,
     pub border: Color,
@@ -174,7 +174,7 @@ impl DisabledColors {
 }
 
 /// Blends an overlay color at the given opacity onto a base color.
-pub fn blend_overlay(base: Color, overlay: Color, opacity: f32) -> Color {
+pub(crate) fn blend_overlay(base: Color, overlay: Color, opacity: f32) -> Color {
     let oa = overlay.a * opacity;
     let ba = base.a;
     let out_a = oa + ba * (1.0 - oa);
@@ -194,7 +194,7 @@ pub fn blend_overlay(base: Color, overlay: Color, opacity: f32) -> Color {
 /// 1. If current foreground meets WCAG AA (4.5:1), keep it.
 /// 2. Choose black or white — whichever has higher contrast.
 /// 3. If contrast difference < 0.8, preserve current color's lightness to prevent oscillation.
-pub fn stable_foreground(bg: Color, current_fg: Color) -> Color {
+pub(crate) fn stable_foreground(bg: Color, current_fg: Color) -> Color {
     if current_fg.contrast_ratio(&bg) >= 4.5 {
         return current_fg;
     }

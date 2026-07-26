@@ -174,6 +174,7 @@ pub fn process_dirty_set(
     )
 }
 
+#[allow(dead_code)]
 pub fn clear_dirty_subtree(arena: &mut ElementArena, eid: ElementId, level: DirtyFlags) {
     if let Some(element) = arena.get_mut(eid) {
         let mask = DirtyFlags(!level.0 & 0b111);
@@ -189,6 +190,7 @@ pub fn clear_dirty_subtree(arena: &mut ElementArena, eid: ElementId, level: Dirt
     }
 }
 
+#[allow(dead_code)]
 pub fn pre_compute_paint_flags(arena: &ElementArena) -> (bool, bool) {
     let dirty = dirty_registry::take_dirty();
     let (_roots, has_measure, _processed, _layout_roots) = process_dirty_set(arena, &dirty);

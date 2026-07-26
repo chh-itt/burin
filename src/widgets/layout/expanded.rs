@@ -3,6 +3,7 @@ use crate::core::widget::Widget;
 use crate::core::ElementId;
 use crate::ecs::components;
 
+/// A widget that fills available space in a flex layout.
 pub struct Expanded {
     child: Option<Box<dyn Widget>>,
 }

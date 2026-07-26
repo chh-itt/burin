@@ -57,6 +57,11 @@ pub enum ItemFocusMode {
     TabNavigable,
 }
 
+/// A virtualized scrollable list with optional selection.
+///
+/// Renders only the visible rows, recycling a fixed pool of elements.
+/// Use `SelectionBg` for highlight behaviour and `SlotPool` for the
+/// internal recycling pool.
 pub struct List<T: Clone + 'static> {
     items: Signal<Vec<T>>,
     render_fn: Option<Rc<dyn Fn(&T, usize) -> String>>,

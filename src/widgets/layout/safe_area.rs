@@ -22,6 +22,7 @@ use crate::ecs::components;
 use crate::platform::insets;
 use crate::style::Padding;
 
+/// A widget that insets its child by the window's safe area.
 pub struct SafeArea {
     child: Option<Box<dyn Widget>>,
     left: bool,

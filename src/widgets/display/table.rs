@@ -155,6 +155,10 @@ impl ColRuntime {
 // Table Widget
 // ═══════════════════════════════════════════════════════════════════
 
+/// A virtualized data table with sortable columns and multi-select.
+///
+/// Define columns with [`TableColumn`] and supply data as a
+/// `Signal<Vec<T>>`.  Renders a header row and a virtualized body.
 pub struct Table<T: Clone + 'static> {
     rows: Signal<Vec<T>>,
     columns: Vec<TableColumn<T>>,

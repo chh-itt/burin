@@ -8,7 +8,7 @@ use crate::platform::CursorIcon;
 
 /// A cloneable handle for runtime window control.
 ///
-/// Obtained from [`MountContext::window_handle`] during widget mount,
+/// Obtained from `MountContext::window_handle` during widget mount,
 /// or stored directly for imperative window operations.
 #[derive(Clone)]
 pub struct WindowHandle {

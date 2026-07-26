@@ -4,6 +4,7 @@ use crate::core::ElementId;
 use crate::ecs::components;
 use crate::style::Alignment;
 
+/// Center a single child within the available space.
 pub struct Center {
     child: Option<Box<dyn Widget>>,
 }

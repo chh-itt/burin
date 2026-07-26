@@ -12,6 +12,7 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::style::{Dimension, StateStyle, Vec2};
 use crate::theme::m3::roles::{ComponentRole, InteractiveRole, ResolvedComponentStyle};
 
+/// A toggle switch backed by a `Signal<bool>`.
 pub struct Switch {
     checked: auralis_signal::Signal<bool>,
     on_value_changed: Option<Box<dyn Fn(bool)>>,

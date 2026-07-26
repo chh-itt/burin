@@ -4,16 +4,16 @@
 //! structural changes (add/remove/slot_inactive), cross-check vs full rebuild,
 //! and regression tests for bugs #1 and #2.
 
+use crate::core::dirty_registry;
+use crate::core::ElementId;
+use crate::layout::taffy_bridge::TaffyBridge;
+use crate::style::Rect;
+use crate::style::Styled;
+use crate::testing::TestHarness;
+use crate::widgets::display::Text;
+use crate::widgets::input::{Button, TextInput};
+use crate::widgets::layout::{Conditional, HStack, VStack};
 use auralis_signal::Signal;
-use burin::core::dirty_registry;
-use burin::core::ElementId;
-use burin::layout::taffy_bridge::TaffyBridge;
-use burin::style::Rect;
-use burin::style::Styled;
-use burin::testing::TestHarness;
-use burin::widgets::display::Text;
-use burin::widgets::input::{Button, TextInput};
-use burin::widgets::layout::{Conditional, HStack, VStack};
 use std::collections::HashMap;
 
 // ── Helper: run a full rebuild from scratch on a separate TaffyBridge ──
@@ -137,7 +137,7 @@ fn repaint_only_skips_taffy() {
     let btn_eid = h.find(vstack_id).unwrap().children[0];
     h.find_mut(btn_eid)
         .unwrap()
-        .set_state_dirty(burin::core::config::StateFlags::HOVERED, true);
+        .set_state_dirty(crate::core::config::StateFlags::HOVERED, true);
 
     // Run frame — should not trigger MEASURE
     h.run_frame();

@@ -19,6 +19,7 @@ use crate::widgets::layout::VStack;
 // ── AutovalidateMode ──
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+/// When to automatically validate a form field.
 pub enum AutovalidateMode {
     Disabled,
     OnChange,
@@ -65,6 +66,7 @@ fn form_domain() -> Rc<FormDomain> {
     crate::core::app_context::current_app().extension::<FormDomain>()
 }
 
+/// Register a validator for a form field.
 pub fn register_validator(
     element_id: ElementId,
     validator: Option<impl Fn(&str) -> Option<String> + 'static>,
@@ -106,6 +108,7 @@ pub fn debug_registry_sizes() -> (usize, usize, usize) {
     (v, f.len(), f.values().map(|v| v.len()).sum())
 }
 
+/// Remove a previously registered validator.
 pub fn unregister_validator(element_id: ElementId) {
     form_domain()
         .validators
@@ -159,6 +162,7 @@ pub fn validate_form(form_id: ElementId) -> bool {
     all_valid
 }
 
+/// Get the current validation error for a field.
 pub fn get_error(element_id: ElementId) -> Option<String> {
     form_domain()
         .validators
@@ -168,6 +172,7 @@ pub fn get_error(element_id: ElementId) -> Option<String> {
         .and_then(|s| s.error.clone())
 }
 
+/// Clear the validation error for a field.
 pub fn clear_error(element_id: ElementId) {
     if let Some(state) = form_domain()
         .validators
@@ -180,6 +185,7 @@ pub fn clear_error(element_id: ElementId) {
     }
 }
 
+/// Reset all validation errors for a form.
 pub fn reset_form_validators(form_id: ElementId) {
     let dom = form_domain();
     let field_ids: Vec<ElementId> = dom
@@ -210,6 +216,7 @@ fn register_field(form_id: ElementId, field_id: ElementId) {
 
 // ── Field widget ──
 
+/// A form field with label, validation, and error display.
 pub struct Field {
     label: Option<String>,
     description: Option<String>,
@@ -344,6 +351,7 @@ impl Widget for Field {
 
 // ── Form widget ──
 
+/// A form container that groups fields and handles submission.
 pub struct Form {
     fields: Vec<Field>,
     on_submit: Option<Rc<dyn Fn()>>,

@@ -47,10 +47,10 @@ pub enum RecognizerResult {
 // one system and a tap in another). translator.rs and click.rs re-use
 // these constants.
 
-pub const TAP_TIMEOUT_MS: u64 = 300;
-pub const TAP_DRAG_THRESHOLD: f32 = 6.0;
-pub const LONG_PRESS_DURATION_MS: u64 = 500;
-pub const DOUBLE_TAP_INTERVAL_MS: u64 = 400;
+pub(crate) const TAP_TIMEOUT_MS: u64 = 300;
+pub(crate) const TAP_DRAG_THRESHOLD: f32 = 6.0;
+pub(crate) const LONG_PRESS_DURATION_MS: u64 = 500;
+pub(crate) const DOUBLE_TAP_INTERVAL_MS: u64 = 400;
 
 // ── TapRecognizer ──
 
@@ -486,7 +486,7 @@ impl Recognizer for EagerDragRecognizer {
 
 /// Android ViewConfiguration-style touch slop. Deliberately larger than
 /// the 6px mouse threshold — fingers jitter. Tune on-device in W3.
-pub const TOUCH_SLOP: f32 = 8.0;
+pub(crate) const TOUCH_SLOP: f32 = 8.0;
 
 #[derive(Clone)]
 pub struct ScrollRecognizer {
@@ -595,7 +595,7 @@ pub struct GestureWin {
 }
 
 /// Per-element recognizer registration.
-pub struct RecognizerRegistration {
+pub(crate) struct RecognizerRegistration {
     pub recognizer: Box<dyn Recognizer>,
     pub priority: u16,
     pub kind: RecognizerKind,
@@ -681,11 +681,11 @@ pub(crate) fn fire_on_accept(eid: ElementId, reg_idx: usize, phase: GesturePhase
     }
 }
 
-pub fn push_long_press_win(eid: ElementId) {
+pub(crate) fn push_long_press_win(eid: ElementId) {
     with_gesture_domain_mut(|gd| gd.pending_wins.push(eid));
 }
 
-pub fn drain_long_press_wins() -> Vec<ElementId> {
+pub(crate) fn drain_long_press_wins() -> Vec<ElementId> {
     with_gesture_domain_mut(|gd| gd.pending_wins.drain(..).collect())
 }
 
@@ -723,7 +723,7 @@ pub fn unregister_recognizer(eid: ElementId) {
 /// Remove only the recognizers of `kind` for `eid` (e.g. swapping drag
 /// arbitration re-registers the Drag recognizer without disturbing an
 /// element's long-press registration).
-pub fn unregister_recognizer_kind(eid: ElementId, kind: RecognizerKind) {
+pub(crate) fn unregister_recognizer_kind(eid: ElementId, kind: RecognizerKind) {
     with_gesture_domain_mut(|gd| {
         if let Some(v) = gd.registry.get_mut(&eid) {
             v.retain(|r| r.kind != kind);
@@ -735,7 +735,7 @@ pub fn unregister_recognizer_kind(eid: ElementId, kind: RecognizerKind) {
 }
 
 /// Whether `eid` has a recognizer of `kind` registered.
-pub fn has_recognizer_kind(eid: ElementId, kind: RecognizerKind) -> bool {
+pub(crate) fn has_recognizer_kind(eid: ElementId, kind: RecognizerKind) -> bool {
     with_gesture_domain_mut(|gd| {
         gd.registry
             .get(&eid)
@@ -745,12 +745,12 @@ pub fn has_recognizer_kind(eid: ElementId, kind: RecognizerKind) -> bool {
 
 /// The element currently holding the drag capture for `pointer_id`, if a
 /// Drag-kind registration has won this pointer's arena.
-pub fn drag_capture(pointer_id: u64) -> Option<ElementId> {
+pub(crate) fn drag_capture(pointer_id: u64) -> Option<ElementId> {
     with_gesture_domain_mut(|gd| gd.drag_captures.get(&pointer_id).copied())
 }
 
 /// Clear the drag capture for `pointer_id` (PointerUp / Cancel).
-pub fn clear_drag_capture(pointer_id: u64) {
+pub(crate) fn clear_drag_capture(pointer_id: u64) {
     with_gesture_domain_mut(|gd| {
         gd.drag_captures.remove(&pointer_id);
     });
@@ -758,7 +758,8 @@ pub fn clear_drag_capture(pointer_id: u64) {
 
 /// The scroll container captured by `pointer_id`, if a Scroll-kind
 /// registration won this pointer's arena.
-pub fn scroll_capture(pointer_id: u64) -> Option<ElementId> {
+#[allow(dead_code)]
+pub(crate) fn scroll_capture(pointer_id: u64) -> Option<ElementId> {
     with_gesture_domain_mut(|gd| gd.scroll_captures.get(&pointer_id).map(|c| c.eid))
 }
 
@@ -813,7 +814,7 @@ pub(crate) fn scroll_capture_release(
 
 /// Whether click synthesis is suppressed for this pointer sequence
 /// (a non-Tap gesture won). Consuming read — the flag resets.
-pub fn take_click_suppressed(pointer_id: u64) -> bool {
+pub(crate) fn take_click_suppressed(pointer_id: u64) -> bool {
     with_gesture_domain_mut(|gd| gd.click_suppressed.remove(&pointer_id))
 }
 
@@ -1128,7 +1129,8 @@ pub fn process_timeouts() {
 
 /// Reset all recognizers and drop all arenas (window-level cancel, e.g.
 /// focus loss — NOT per-pointer cancel, use GesturePhase::Cancelled there).
-pub fn reset_all() {
+#[allow(dead_code)]
+pub(crate) fn reset_all() {
     with_gesture_domain_mut(|gd| {
         for regs in gd.registry.values_mut() {
             for r in regs.iter_mut() {

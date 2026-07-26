@@ -9,17 +9,20 @@ use crate::style::{Color, Dimension};
 use crate::widgets::display::Text;
 use crate::widgets::layout::{HStack, VStack};
 
+/// A read-only property grid with labeled key-value rows.
 pub struct PropertyGrid {
     sections: Vec<PropertySection>,
     label_width: f32,
     style: StyleRefinement,
 }
 
+/// A titled section within a property grid.
 pub struct PropertySection {
     pub title: String,
     pub rows: Vec<PropertyRow>,
 }
 
+/// A single label-value pair in a property grid.
 pub struct PropertyRow {
     pub label: String,
     pub value: Signal<String>,

@@ -110,7 +110,7 @@ impl TextInputConfig {
 // ── CompositionState ───────────────────────────────
 
 #[derive(Clone, Debug)]
-pub struct CompositionState {
+pub(crate) struct CompositionState {
     pub text: String,
     pub range: Range<usize>,
     pub cursor_range: Option<(usize, usize)>,
@@ -121,7 +121,7 @@ pub struct CompositionState {
 // longer pays per-step O(N) string copies (audit 2026-07-16 L1L2).
 
 #[derive(Clone)]
-pub struct EditorSnapshot {
+pub(crate) struct EditorSnapshot {
     pub text: Rope,
     pub cursor: usize,
     pub selection_anchor: usize,
@@ -130,7 +130,7 @@ pub struct EditorSnapshot {
 
 // ── UndoStack ──────────────────────────────────────
 
-pub struct UndoStack<T> {
+pub(crate) struct UndoStack<T> {
     entries: Vec<T>,
     index: usize,
     capacity: usize,

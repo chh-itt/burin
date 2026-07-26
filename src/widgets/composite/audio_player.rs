@@ -24,6 +24,7 @@ const VOLUME_ICON: &str = "\u{1F50A}";
 const LOOP_NONE_ICON: &str = "\u{1F502}";
 const LOOP_ONE_ICON: &str = "\u{1F501}";
 
+/// An audio player widget with playback controls.
 pub struct AudioPlayerWidget {
     player: Rc<AudioPlayer>,
     track_title: Option<Signal<String>>,

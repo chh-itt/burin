@@ -318,14 +318,11 @@ fn day_view_arrow_keys_navigate_focus() {
     h.click(cal);
     h.run_frame();
 
-    // Arrow keys should not panic
-    h.press_key(Key::ArrowRight, Modifiers::default());
-    h.run_frame();
+    // ArrowDown moves from header to the 1st of the current month.
     h.press_key(Key::ArrowDown, Modifiers::default());
     h.run_frame();
-    h.press_key(Key::ArrowLeft, Modifiers::default());
-    h.run_frame();
-    h.press_key(Key::ArrowUp, Modifiers::default());
+    // ArrowRight moves one day forward (to the 2nd).
+    h.press_key(Key::ArrowRight, Modifiers::default());
     h.run_frame();
 
     // Enter should select

@@ -26,6 +26,7 @@ pub struct TaffyBridge {
     node_map: HashMap<ElementId, taffy::NodeId>,
 }
 
+#[allow(dead_code)]
 impl TaffyBridge {
     pub fn new() -> Self {
         let mut tree = taffy::TaffyTree::new();
@@ -435,6 +436,7 @@ fn height_taffy_dim(layout: &Option<LayoutComponent>, pixel_h: f32) -> taffy::Di
     }
 }
 
+#[allow(dead_code)]
 pub fn to_taffy_padding(p: Padding) -> taffy::Rect<taffy::LengthPercentageAuto> {
     taffy::Rect {
         left: taffy::LengthPercentageAuto::length(p.left),

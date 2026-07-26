@@ -8,6 +8,7 @@ use crate::theme::{Appearance, ControlSize, Intent};
 use crate::widgets::display::Icon;
 use crate::widgets::input::Button;
 
+/// A circular icon-only button.
 pub struct IconButton {
     icon: Icon,
     on_click: Option<Box<dyn Fn()>>,

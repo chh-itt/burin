@@ -16,6 +16,11 @@ use std::rc::Rc;
 
 // ── Button ──
 
+/// A pressable button with a text label.
+///
+/// Fires an `.on_click()` callback when pressed.  Follows the active
+/// theme's button style for colours, border radius, and typography.
+/// Supports disabled, loading, and intent variants.
 pub struct Button {
     label: String,
     label_signal: Option<auralis_signal::Signal<String>>,
@@ -91,7 +96,7 @@ impl Button {
         self.on_key_up = Some(Box::new(f));
         self
     }
-    /// Bind a Signal<String> for reactive label updates.
+    /// Bind a `Signal<String>` for reactive label updates.
     /// The button text updates every frame from the signal.
     pub fn bind(mut self, signal: auralis_signal::Signal<String>) -> Self {
         self.label = signal.read();

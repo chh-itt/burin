@@ -291,7 +291,7 @@ impl Simulation for ConstantDecelSim {
 // transition to a SpringSimulation if the friction would overshoot the boundary.
 // This creates the characteristic iOS "bounce past, then spring back" feel.
 
-pub struct BouncingScrollSimulation {
+pub(crate) struct BouncingScrollSimulation {
     friction: FrictionSimulation,
     spring: Option<(SpringSimulation, f32)>,
 }
@@ -441,7 +441,7 @@ impl Simulation for BouncingScrollSimulation {
 // Position: x(t) = pos + dist × (1 − (1 − t/dur)^k)
 // Velocity: v(t) = v₀ × (1 − t/dur)^(k−1)
 
-pub struct ClampingScrollSimulation {
+pub(crate) struct ClampingScrollSimulation {
     position: f32,
     velocity: f32,
     distance: f32,

@@ -93,7 +93,7 @@ pub enum Event {
     },
 }
 
-/// Phase of a multi-touch gesture.
+/// Phase of a multi-touch gesture (pinch, rotate).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum GesturePhase {
     Started,
@@ -185,6 +185,7 @@ impl Modifiers {
 }
 
 /// The phase of event propagation.
+/// Whether an event was captured or bubbled.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum EventPhase {
     /// Root → target (top-down).
@@ -194,6 +195,7 @@ pub enum EventPhase {
 }
 
 /// Result of event handling by a widget.
+/// Whether a handler consumed the event or passed it through.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum EventStatus {
     /// Event was not handled, continue propagation.

@@ -7,6 +7,7 @@ use thiserror::Error;
 
 // ── Severity ──
 
+/// Severity level for error classification and handling.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum ErrorSeverity {
@@ -17,6 +18,7 @@ pub enum ErrorSeverity {
 
 // ── Error Record ──
 
+/// A single error occurrence with metadata for diagnostics.
 #[derive(Debug)]
 pub struct ErrorRecord {
     pub severity: ErrorSeverity,
@@ -29,6 +31,7 @@ pub struct ErrorRecord {
 
 // ── UiError ──
 
+/// All user-facing error variants the framework can produce.
 #[derive(Error, Debug)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum UiError {
@@ -159,6 +162,7 @@ impl UiError {
 
 // ── GpuErrorKind ──
 
+/// Specific GPU initialization failure modes.
 #[derive(Error, Debug)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum GpuErrorKind {
@@ -189,10 +193,12 @@ thread_local! {
 
 // ── Public API ──
 
+/// Queue an error into the ring buffer and invoke the error handler.
 pub fn push_error(err: UiError) {
     push_error_impl(err, None);
 }
 
+/// Queue an error with an explicit severity override.
 pub fn push_error_with_severity(err: UiError, severity: ErrorSeverity) {
     push_error_impl(err, Some(severity));
 }
@@ -246,6 +252,7 @@ fn push_error_impl(err: UiError, severity_override: Option<ErrorSeverity>) {
     });
 }
 
+/// Set the callback invoked for every pushed error.
 pub fn set_error_handler(handler: Rc<dyn Fn(&UiError)>) {
     ERROR_HANDLER.with(|h| *h.borrow_mut() = Some(handler));
 }
@@ -264,19 +271,23 @@ pub fn set_fatal_handler(handler: Rc<dyn Fn(&UiError)>) {
     FATAL_HANDLER.with(|h| *h.borrow_mut() = Some(handler));
 }
 
+/// Cap the number of errors retained in the ring buffer.
 pub fn set_error_buffer_limit(limit: usize) {
     ERROR_LIMIT.set(limit);
 }
 
+/// Attach a frame id to subsequently pushed errors.
 pub fn set_current_frame_id(id: Option<u64>) {
     CURRENT_FRAME_ID.set(id);
 }
 
+/// Returns per-variant error counts since process start.
 pub fn error_counts() -> Vec<(&'static str, u64)> {
     ERROR_COUNTS.with(|c| c.borrow().iter().map(|(k, v)| (*k, *v)).collect())
 }
 
 #[cfg(feature = "devtools")]
+/// Snapshot of an error for devtools display.
 #[derive(Debug, Clone)]
 pub struct ErrorSummary {
     pub severity: ErrorSeverity,
@@ -287,6 +298,7 @@ pub struct ErrorSummary {
 }
 
 #[cfg(feature = "devtools")]
+/// Returns recently pushed errors for devtools display.
 pub fn recent_errors() -> Vec<ErrorSummary> {
     ERROR_BUFFER.with(|buf| {
         buf.borrow()

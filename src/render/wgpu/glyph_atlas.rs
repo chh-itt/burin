@@ -5,12 +5,12 @@ use std::collections::HashMap;
 use cosmic_text::{Attrs, Buffer, Color as CosmicColor, Family, FontSystem, Metrics, Shaping, SwashCache, Weight};
 use crate::style::{Color, TextDirection};
 
-pub struct TextImage { pub width: u32, pub height: u32, pub pixels: Vec<u8> }
+pub(crate) struct TextImage { pub width: u32, pub height: u32, pub pixels: Vec<u8> }
 
-pub struct CachedText { pub image: TextImage, pub logical_w: f32, pub logical_h: f32, pub offset_x: f32, pub offset_y: f32 }
+pub(crate) struct CachedText { pub image: TextImage, pub logical_w: f32, pub logical_h: f32, pub offset_x: f32, pub offset_y: f32 }
 
 /// Render text to a CPU pixel buffer via cosmic-text's own draw pipeline.
-pub fn render_text_to_pixels(
+pub(crate) fn render_text_to_pixels(
     font_system: &mut FontSystem,
     swash_cache: &mut SwashCache,
     text: &str,
@@ -144,7 +144,7 @@ pub fn render_text_to_pixels(
     Some((TextImage { width: cw, height: ch, pixels: cropped }, lw, lh, ox, oy))
 }
 
-pub struct TextCache { entries: HashMap<u64, CachedText> }
+pub(crate) struct TextCache { entries: HashMap<u64, CachedText> }
 
 impl TextCache {
     pub fn new() -> Self { Self { entries: HashMap::new() } }
@@ -174,7 +174,7 @@ impl TextCache {
 }
 
 /// Measure the exact pixel x-position of the cursor after the given character index.
-pub fn measure_cursor_x(
+pub(crate) fn measure_cursor_x(
     font_system: &mut FontSystem,
     text: &str,
     char_index: usize,
@@ -207,7 +207,7 @@ pub fn measure_cursor_x(
 }
 
 /// Find the character index closest to a given pixel x-position.
-pub fn measure_char_at_x(
+pub(crate) fn measure_char_at_x(
     font_system: &mut FontSystem,
     text: &str,
     x_pos: f32,
@@ -260,7 +260,7 @@ fn byte_to_char_index(s: &str, bi: usize) -> usize {
 }
 
 /// Lightweight text measurer using its own FontSystem.
-pub struct TextMeasurer {
+pub(crate) struct TextMeasurer {
     font_system: FontSystem,
     font_system_ok: bool,
 }

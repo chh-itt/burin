@@ -8,6 +8,7 @@ use crate::event::FocusReason;
 use crate::platform::CursorIcon;
 use crate::style::Point;
 
+/// A widget that captures pointer, keyboard, and gesture events.
 pub struct MouseRegion {
     child: Option<Box<dyn Widget>>,
     // ── Click ──

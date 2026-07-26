@@ -28,6 +28,7 @@ const PANEL_PADDING: f32 = 12.0;
 const PANEL_WIDTH: f32 = PLANE_SIZE + PANEL_PADDING * 2.0;
 const HEX_FONT_SIZE: f32 = 13.0;
 
+/// A color picker with hue, saturation, and alpha controls.
 pub struct ColorPicker {
     color: Signal<Color>,
     presets: Vec<Color>,

@@ -17,6 +17,7 @@ use crate::theme::tokens;
 use auralis_signal::Signal;
 
 // Re-exported for backward compatibility.
+/// A single radio option with a label.
 pub struct RadioButton<T: Clone + PartialEq + 'static> {
     pub value: T,
     pub label: String,
@@ -37,6 +38,7 @@ impl<T: Clone + PartialEq + 'static> RadioButton<T> {
     }
 }
 
+/// A mutually exclusive group of radio options.
 pub struct RadioGroup<T: Clone + PartialEq + 'static> {
     selected: Signal<T>,
     on_value_changed: Option<Rc<dyn Fn(T)>>,

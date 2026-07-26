@@ -15,6 +15,10 @@ use std::rc::Rc;
 /// A simple text label.
 pub use auralis_signal::Signal;
 
+/// A single-line or multi-line text label.
+///
+/// Binds to a [`Signal<String>`] for reactive updates.  Style with
+/// `.font_size()`, `.text_color()`, and other [`Styled`] methods.
 pub struct Text {
     content: String,
     style: StyleRefinement,

@@ -50,6 +50,10 @@ impl<T: Clone> OptionGroup<T> {
 // Select
 // ═══════════════════════════════════════════════════════════════════════
 
+/// A dropdown selector backed by a `Signal<T>`.
+///
+/// Clicking opens a portal with a scrollable list of options.  Supports
+/// keyboard navigation, type-ahead filtering, and disabled state.
 pub struct Select<T: Clone + 'static> {
     selected: Signal<Option<T>>,
     options: Vec<T>,

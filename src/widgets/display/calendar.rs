@@ -39,6 +39,7 @@ pub const EN_WEEKDAYS: [&str; 7] = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 #[cfg(feature = "ext-jiff")]
 #[derive(Clone, Copy, PartialEq, Eq)]
+/// The current view mode of a calendar.
 pub(crate) enum CalendarMode {
     Day,
     Month,
@@ -106,6 +107,7 @@ fn mark_cell_repaint(cell_id: ElementId) {
 }
 
 #[cfg(feature = "ext-jiff")]
+/// A date grid with month and year selection modes.
 pub struct Calendar {
     #[cfg(feature = "ext-jiff")]
     selected: Signal<Option<Date>>,

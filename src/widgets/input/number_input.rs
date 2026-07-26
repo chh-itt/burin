@@ -14,6 +14,7 @@ use auralis_signal::Signal;
 use super::button::Button;
 use super::text_input::{TextInput, TextInputType};
 
+/// A text input with numeric increment and decrement controls.
 pub struct NumberInput {
     value: Signal<f64>,
     min: f64,

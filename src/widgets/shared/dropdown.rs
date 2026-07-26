@@ -140,7 +140,7 @@ pub fn register_unmount_pop_modal(scope_id: ElementId) {
 
 /// Scroll the dropdown to keep the selected item visible when the
 /// dropdown opens.  Duplicated ~12 lines in Select + ComboBox.
-pub fn scroll_to_selected_on_open(
+pub(crate) fn scroll_to_selected_on_open(
     selected_idx: Rc<Cell<Option<usize>>>,
     item_height: f32,
     visible_count: usize,

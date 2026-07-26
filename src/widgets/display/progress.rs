@@ -19,6 +19,9 @@ pub enum ProgressKind {
     Circular,
 }
 
+/// A linear or circular progress indicator.
+///
+/// Supports determinate (0..1 value) and indeterminate (spinning) modes.
 pub struct Progress {
     value: Signal<f64>,
     kind: ProgressKind,

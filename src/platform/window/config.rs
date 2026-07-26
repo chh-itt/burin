@@ -7,6 +7,10 @@ use crate::theme::M3Theme;
 
 // ═══════════════════════ WindowConfig ═══════════════════════
 
+/// Window creation parameters.
+///
+/// Set the title, size, theme, rendering backend, and optionally a
+/// reactive theme signal.  Pass to [`App::window`](crate::platform::window::app::App::window).
 pub struct WindowConfig {
     pub title: String,
     pub width: f32,

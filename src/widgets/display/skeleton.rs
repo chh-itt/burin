@@ -21,6 +21,7 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::style::Color;
 use crate::theme::m3::roles::{ComponentRole, DisplayRole};
 
+/// A loading placeholder with optional shimmer animation.
 pub struct Skeleton {
     width: f32,
     height: f32,

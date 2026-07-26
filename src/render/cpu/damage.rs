@@ -10,7 +10,7 @@
 //! - **moves**: the previously-painted area (the "vacated" region) was never
 //!   repainted, leaving ghosts.
 //!
-//! [`DamageTracker`] therefore computes an **inflated visual rect** per dirty
+//! `DamageTracker` therefore computes an **inflated visual rect** per dirty
 //! element (bounds ∪ shadow/outline extent, transformed), unions it with the
 //! element's *previous* visual rect, and finally makes the merged rectangles
 //! **disjoint** — overlapping damage rects would double-composite translucent
@@ -23,7 +23,7 @@ use std::collections::HashMap;
 /// Anti-aliasing / rounding safety margin (logical px).
 const MARGIN: f32 = 3.0;
 
-pub struct DamageTracker {
+pub(crate) struct DamageTracker {
     /// Last inflated visual rect per element, keyed by element id. Entries
     /// are dropped when the element disappears from the arena.
     prev_visual: HashMap<ElementId, Rect>,
@@ -102,6 +102,7 @@ impl DamageTracker {
     }
 
     /// Forget tracked state (e.g. after a full-tree rebuild).
+    #[allow(dead_code)]
     pub fn clear(&mut self) {
         self.prev_visual.clear();
     }

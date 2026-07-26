@@ -3,6 +3,7 @@ use crate::core::widget::Widget;
 use crate::core::ElementId;
 use crate::ecs::components;
 
+/// A widget that applies an opacity multiplier to its child.
 pub struct Opacity {
     opacity: f32,
     child: Option<Box<dyn Widget>>,

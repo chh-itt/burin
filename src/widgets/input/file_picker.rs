@@ -17,6 +17,7 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::theme::{Appearance, ControlShape, ControlSize, Intent};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+/// The mode of a native file dialog.
 pub enum FilePickerMode {
     Open,
     OpenMultiple,
@@ -24,6 +25,7 @@ pub enum FilePickerMode {
     Folder,
 }
 
+/// A button that opens a native file dialog.
 pub struct FilePickerButton {
     label: String,
     #[cfg(feature = "file-dialog")]

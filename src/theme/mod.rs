@@ -5,12 +5,12 @@
 //! - **Layer 1 (Ambient)**: Zero-config environment colors. Every widget
 //!   defaults to these — no code needed for a neutral look.
 //! - **Layer 2 (Semantic)**: Intent-driven colors via `.intent(Primary)`.
-//!   Maps directly to the 7-intent [`SemanticPalette`].
-//! - **Layer 3 (Direct)**: Full token-level override via [`Styled`] methods
+//!   Maps directly to the 7-intent `SemanticPalette`.
+//! - **Layer 3 (Direct)**: Full token-level override via [`Styled`](crate::style::styled::Styled) methods
 //!   or by mutating the [`Theme`] struct fields.
 //!
 //! Widgets never hardcode visual properties — all defaults flow from Theme
-//! through [`MountContext`] to widget [`mount_box`].
+//! through `MountContext` to widget `mount_box`.
 
 pub mod apply;
 pub mod auto_switch;
@@ -49,7 +49,11 @@ pub trait Theme: 'static {
 /// Material 3 dynamic theme — seed-based color generation.
 /// Default personality: Refined (warm neutrals, restrained accent, gentle interaction).
 /// Use builder methods like `.warmth()`, `.accent()` to customize.
-/// Call `.m3_classic()` to restore the original M3 look.
+/// A Material 3 theme holding colour schemes, typography, and design tokens.
+///
+/// Create with [`M3Theme::from_seed`], [`M3Theme::preset`], or
+/// [`auto_theme`].  Available via `MountContext::theme` during
+/// widget mount.  Call `.m3_classic()` to restore the original M3 look.
 #[derive(Clone, Debug)]
 pub struct M3Theme {
     pub name: &'static str,
@@ -307,6 +311,7 @@ fn default_breakpoints() -> Breakpoints {
 
 // ── Component variant types ─────────────────────────────────────────
 
+/// Semantic colour intent for themed components.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Intent {
     Default,
@@ -319,6 +324,7 @@ pub enum Intent {
     Accent,
 }
 
+/// Visual prominence variant for themed components.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Appearance {
     Filled,
@@ -327,6 +333,7 @@ pub enum Appearance {
     Elevated,
 }
 
+/// Size class for themed controls.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ControlSize {
     Small,
@@ -334,6 +341,7 @@ pub enum ControlSize {
     Large,
 }
 
+/// Border radius class for themed controls.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ControlShape {
     Rounded,

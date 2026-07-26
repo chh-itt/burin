@@ -22,6 +22,7 @@ use std::sync::Arc;
 
 const MENU_WIDTH: f32 = 220.0;
 
+/// A declarative right-click context menu widget.
 pub struct ContextMenu {
     visible: Signal<bool>,
     position: Signal<Point>,
@@ -30,6 +31,7 @@ pub struct ContextMenu {
 }
 
 #[derive(Clone)]
+/// A single item in a context menu.
 pub struct ContextMenuItem {
     pub label: String,
     pub enabled: bool,

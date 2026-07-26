@@ -8,37 +8,54 @@
 //! is marked via `mark_a11y_changed`, and the next build only reconstructs
 //! nodes for elements in that set.  All other elements reuse their cached
 //! `Node`, which is bounds-updated in-place.
+//!
+//! ## Node cache isolation
+//!
+//! Each window (or test harness) owns its own [`A11yNodeCache`] via
+//! [`AppContext::extension`](crate::core::app_context::AppContext::extension).
+//! The cache is dropped with the context, so stale entries never leak
+//! across windows or test instances.
 
 use std::cell::RefCell;
 use std::collections::HashMap;
 
 use accesskit::{Live, Node, NodeId, Rect as A11yRect, Role, Tree, TreeId, TreeUpdate};
 
+use crate::core::app_context::current_app;
 use crate::core::config::{AriaLive, StateFlags};
 use crate::core::element::ElementArena;
 use crate::core::ElementId;
 
-thread_local! {
-    /// Cached `Node` objects keyed by ElementId, reused across builds
-    /// to avoid re-allocating nodes for unchanged elements.
-    ///
-    /// Lifecycle (audit 2026-07-17 round 3, Finding A): entries of torn-down
-    /// elements are dropped via the teardown hook below; visibility-based
-    /// eviction in `collect_nodes_incremental` only covers hidden-but-alive
-    /// elements.
-    static A11Y_NODE_CACHE: RefCell<HashMap<ElementId, Node>> = RefCell::new(HashMap::new());
+/// Per-window (or per-harness) cache of accessibility `Node` objects,
+/// keyed by ElementId.  Owned by `AppContext::extension` so each window
+/// and each test harness gets an isolated cache.
+#[derive(Default)]
+pub(crate) struct A11yNodeCache {
+    cache: RefCell<HashMap<ElementId, Node>>,
+}
+
+impl A11yNodeCache {
+    fn remove(&self, id: ElementId) {
+        self.cache.borrow_mut().remove(&id);
+    }
+
+    fn len(&self) -> usize {
+        self.cache.borrow().len()
+    }
+}
+
+fn a11y_cache() -> std::rc::Rc<A11yNodeCache> {
+    current_app().extension::<A11yNodeCache>()
 }
 
 fn teardown_cleanup(id: ElementId) {
-    A11Y_NODE_CACHE.with(|cache| {
-        cache.borrow_mut().remove(&id);
-    });
+    a11y_cache().remove(id);
 }
 
 /// Test-only introspection: cached node count.
 #[doc(hidden)]
 pub fn debug_node_cache_len() -> usize {
-    A11Y_NODE_CACHE.with(|cache| cache.borrow().len())
+    a11y_cache().len()
 }
 
 /// Build the accessibility tree.  Iterates all visible elements; for those
@@ -53,10 +70,9 @@ pub fn build_accessibility_tree(
     let changed = crate::ecs::drain_a11y_changed();
     let mut nodes: Vec<(NodeId, Node)> = Vec::new();
 
-    A11Y_NODE_CACHE.with(|cache| {
-        let mut cache = cache.borrow_mut();
-        collect_nodes_incremental(arena, root_id, &mut nodes, &changed, &mut cache);
-    });
+    let a11y_cache = a11y_cache();
+    let mut cache = a11y_cache.cache.borrow_mut();
+    collect_nodes_incremental(arena, root_id, &mut nodes, &changed, &mut cache);
 
     TreeUpdate {
         nodes,

@@ -27,7 +27,7 @@ use crate::core::clock;
 
 /// Well-known scheduler keys. Feature-level singletons use fixed values;
 /// per-element subscriptions derive a key via [`keys::element_key`].
-pub mod keys {
+pub(crate) mod keys {
     /// Text-input cursor blink (discrete, 500 ms boundaries).
     pub const CURSOR_BLINK: u64 = 4;
     /// Tooltip show/hide delay (discrete).
@@ -41,10 +41,12 @@ pub mod keys {
     /// Namespace for indeterminate-progress spinners.
     pub const NS_SPINNER: u32 = 1;
     /// Namespace for Phase-2 driver-owned per-element wakes (reserved).
+    #[allow(dead_code)]
     pub const NS_DRIVER: u32 = 2;
     /// Namespace for accordion height transitions.
     pub const NS_ACCORDION: u32 = 3;
     /// Namespace for DevTools window frame-tick polling.
+    #[allow(dead_code)]
     pub const NS_DEVTOOLS: u32 = 4;
 
     /// Derive a per-element key: `namespace` in the high 32 bits, the
@@ -57,6 +59,7 @@ pub mod keys {
 
     /// Allocate a unique scheduler key for third-party use.
     /// Keys start at a high value to avoid collision with built-in constants.
+    #[allow(dead_code)]
     pub fn register_key() -> u64 {
         use std::sync::atomic::{AtomicU64, Ordering};
         static NEXT: AtomicU64 = AtomicU64::new(0x1000_0000_0000);
@@ -86,13 +89,13 @@ fn domain() -> std::rc::Rc<SchedulerDomain> {
 
 /// Subscribe `key` to per-frame wakes. Idempotent — acquiring an already
 /// held key is a no-op (NOT a counted nesting; one release clears it).
-pub fn acquire_continuous(key: u64) {
+pub(crate) fn acquire_continuous(key: u64) {
     domain().continuous.borrow_mut().insert(key);
 }
 
 /// Drop `key`'s per-frame wake subscription. Releasing a key that was
 /// never acquired is a no-op; other keys are unaffected.
-pub fn release_continuous(key: u64) {
+pub(crate) fn release_continuous(key: u64) {
     domain().continuous.borrow_mut().remove(&key);
 }
 
@@ -102,7 +105,7 @@ pub fn release_continuous(key: u64) {
 /// the tick pass already skips hidden/inactive elements, so hiding the
 /// element stops the renewal and the wake decays automatically
 /// (Makepad-NextFrame-style: nothing to un-register, nothing to leak).
-pub fn acquire_element_continuous(key: u64) {
+pub(crate) fn acquire_element_continuous(key: u64) {
     let dom = domain();
     dom.continuous.borrow_mut().insert(key);
     dom.element_renewed.borrow_mut().insert(key);
@@ -111,7 +114,7 @@ pub fn acquire_element_continuous(key: u64) {
 /// Sweep element-namespace wakes (high 32 bits != 0) that were not renewed
 /// since the last sweep. Fixed feature keys are never touched. Called once
 /// per event-loop turn by the window / per frame by the harness.
-pub fn sweep_stale_element_wakes() {
+pub(crate) fn sweep_stale_element_wakes() {
     let dom = domain();
     let renewed = std::mem::take(&mut *dom.element_renewed.borrow_mut());
     dom.continuous
@@ -121,7 +124,7 @@ pub fn sweep_stale_element_wakes() {
 
 /// Register a discrete wake deadline.
 /// If a prior deadline for the same key exists, it is replaced.
-pub fn schedule_at(instant: Instant, key: u64) {
+pub(crate) fn schedule_at(instant: Instant, key: u64) {
     let dom = domain();
     let mut v = dom.discrete.borrow_mut();
     v.retain(|e| e.key != key);
@@ -130,7 +133,7 @@ pub fn schedule_at(instant: Instant, key: u64) {
 
 /// Cancel all wakes associated with `key` — both the continuous
 /// subscription and any discrete deadline.
-pub fn cancel(key: u64) {
+pub(crate) fn cancel(key: u64) {
     let dom = domain();
     dom.discrete.borrow_mut().retain(|e| e.key != key);
     dom.continuous.borrow_mut().remove(&key);
@@ -158,7 +161,7 @@ pub fn has_continuous() -> bool {
 /// Whether any discrete deadline has expired (i.e. <= now).
 /// Returns `true` only when a deadline has actually been reached;
 /// frames are NOT requested during the sleep period.
-pub fn expired_discrete() -> bool {
+pub(crate) fn expired_discrete() -> bool {
     let now = clock::now();
     domain().discrete.borrow().iter().any(|e| e.instant <= now)
 }
@@ -167,7 +170,7 @@ pub fn expired_discrete() -> bool {
 /// if any were removed. Unlike [`expired_discrete`], this consumes the expired
 /// entries so a one-shot deadline fires exactly once instead of being reported
 /// as expired on every subsequent frame.
-pub fn drain_expired() -> bool {
+pub(crate) fn drain_expired() -> bool {
     let now = clock::now();
     let dom = domain();
     let mut v = dom.discrete.borrow_mut();
@@ -177,7 +180,7 @@ pub fn drain_expired() -> bool {
 }
 
 /// Whether any wake is pending (continuous or discrete).
-pub fn any_active() -> bool {
+pub(crate) fn any_active() -> bool {
     let dom = domain();
     if !dom.continuous.borrow().is_empty() {
         return true;
@@ -188,7 +191,7 @@ pub fn any_active() -> bool {
 
 /// Reset the scheduler — clear all registrations for the CURRENT app.
 /// Called by `TestHarness::new` for test isolation.
-pub fn reset() {
+pub(crate) fn reset() {
     let dom = domain();
     dom.continuous.borrow_mut().clear();
     dom.element_renewed.borrow_mut().clear();

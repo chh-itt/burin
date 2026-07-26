@@ -17,7 +17,7 @@ use crate::core::error::{panic_to_string, push_error, UiError};
 use crate::style::{Color, Rect, TextAlign};
 
 /// Text rendering instruction produced during the paint phase and consumed
-/// by [`GlyphonBridge::prepare`] during the GPU execution phase.
+/// by `GlyphonBridge::prepare` during the GPU execution phase.
 #[derive(Clone)]
 pub struct TextAreaDesc {
     /// Shaped text buffer to render.
@@ -146,7 +146,7 @@ impl GlyphonBridge {
     }
 
     /// Prepare one z-layer's text into a freshly-allocated pooled
-    /// [`TextRenderer`] and return its index (pass it to [`render_layer`]).
+    /// [`TextRenderer`] and return its index (pass it to `render_layer`).
     ///
     /// Each call advances the pool cursor so distinct layers never share a
     /// renderer — their instance buffers must not clobber each other within a
@@ -292,7 +292,7 @@ impl GlyphonBridge {
         }
     }
 
-    /// Render a layer previously prepared via [`prepare_layer`], by its index.
+    /// Render a layer previously prepared via `prepare_layer`, by its index.
     /// Must be called inside an active render pass.
     pub fn render_layer(&self, idx: usize, pass: &mut wgpu::RenderPass<'_>) {
         let Some(renderer) = self.renderers.get(idx) else {
@@ -468,7 +468,7 @@ thread_local! {
 /// fresh unconstrained measure. Callers must also gate on Start/Left
 /// alignment: Justified stretches inter-word gaps and Center/Right offsets
 /// are irrelevant only because we take max-min, but Justify changes extent.
-pub fn intrinsic_width_from_buffer(buffer: &Buffer, font_size: f32) -> Option<f32> {
+pub(crate) fn intrinsic_width_from_buffer(buffer: &Buffer, font_size: f32) -> Option<f32> {
     let mut runs = buffer.layout_runs();
     let run = runs.next()?;
     if runs.next().is_some() {
@@ -494,7 +494,7 @@ pub fn intrinsic_width_from_buffer(buffer: &Buffer, font_size: f32) -> Option<f3
 /// without bound unless aged out. Called once per PAINTED frame by the
 /// frame driver; entries untouched for `keep_ages` trims are dropped, so
 /// the cache holds only the runs shaped in the last few painted frames.
-pub fn trim_shape_run_cache(keep_ages: u64) {
+pub(crate) fn trim_shape_run_cache(keep_ages: u64) {
     if !ensure_font_system() {
         return;
     }

@@ -6,6 +6,7 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::widgets::display::{ContentFit, ImageData};
 use std::rc::Rc;
 
+/// An SVG image rendered from a file path or raw bytes.
 pub struct SvgImage {
     asset_id: crate::asset::AssetId,
     /// RAII reference covering construct→mount (audit 2026-07-18):

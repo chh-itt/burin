@@ -15,6 +15,7 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::style::{Color, Dimension};
 use crate::theme::m3::roles::{ComponentRole, DisplayRole, ResolvedComponentStyle};
 
+/// A modal overlay with backdrop, animations, and focus trapping.
 pub struct Modal {
     child: Option<Box<dyn Widget>>,
     visible: Signal<bool>,
@@ -274,6 +275,7 @@ use crate::widgets::input::{Button, IconButton};
 use crate::widgets::layout::ScrollView;
 use crate::widgets::layout::{Center, HStack, SizedBox, Spacer, VStack};
 
+/// A single action button in a dialog.
 pub struct DialogAction {
     label: String,
     intent: crate::theme::Intent,
@@ -302,6 +304,7 @@ impl DialogAction {
     }
 }
 
+/// A pre-built modal dialog with header, body, and action buttons.
 pub struct Dialog {
     visible: Signal<bool>,
     title: String,

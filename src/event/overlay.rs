@@ -90,7 +90,7 @@ pub struct OverlayEntry {
 ///
 /// Previously three process-global `thread_local!`s — window A's Escape
 /// could pop window B's modal, and `CAPTURED_FOCUS` leaked focus targets
-/// across windows. Now an [`AppContext::extension`] domain: each window
+/// across windows. Now an `AppContext::extension` domain: each window
 /// gets its own stack.
 #[derive(Default)]
 pub struct OverlayDomain {

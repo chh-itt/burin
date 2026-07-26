@@ -16,7 +16,7 @@ use crate::theme::m3::states::VariantStates;
 /// When the user overrides the base background, hover/pressed/focused state
 /// colors are re-derived from the effective background instead of using the
 /// theme-precomputed values (which were calculated from theme colors).
-pub fn apply_style_to_element(
+pub(crate) fn apply_style_to_element(
     el: &mut Element,
     resolved: &ResolvedComponentStyle,
     user_overrides: &StyleRefinement,

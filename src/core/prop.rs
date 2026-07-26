@@ -114,7 +114,7 @@ impl Prop<String> for &str {
 
 /// Returns a future that resolves when the prop changes.
 ///
-/// Useful in async contexts inside [`TaskScope::spawn`]:
+/// Useful in async contexts inside `TaskScope::spawn`:
 ///
 /// ```ignore
 /// scope.spawn(async move {

@@ -1,7 +1,7 @@
 //! Unified asset store: images, SVGs, animations.
 //!
 //! All loaded assets are keyed by [`AssetId`] and stored in the thread-local
-//! [`ASSETS`] registry.  Both GPU and CPU rendering backends read from here.
+//! `ASSETS` registry.  Both GPU and CPU rendering backends read from here.
 //!
 //! # Lifetime protocol (audit 2026-07-18)
 //!
@@ -9,7 +9,7 @@
 //! protocol as the GPU pixel registry (`render::wgpu::register_image_for`):
 //!
 //! - **Element-owned** (`load_*_owned` + [`retain_asset_for`]): widgets
-//!   load through an [`AssetGuard`] (RAII, covers the construct→mount
+//!   load through an `AssetGuard` (RAII, covers the construct→mount
 //!   window) and attach the asset to their element at mount. The entry is
 //!   freed when the last referencing element is torn down. Identical bytes
 //!   dedup to one entry by content hash.

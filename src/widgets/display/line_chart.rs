@@ -9,6 +9,7 @@ use crate::style::styled::{StyleRefinement, Styled};
 use crate::style::{Color, Rect};
 use crate::theme::m3::roles::{ComponentRole, InteractiveRole, ResolvedComponentStyle};
 
+/// A line chart widget.
 pub struct LineChart {
     data: Signal<Vec<(f32, f32)>>,
     line_color: Color,
@@ -152,6 +153,7 @@ impl Widget for LineChart {
     }
 }
 
+/// Paint data for rendering a line chart.
 pub struct LineChartData {
     pub data_signal: Signal<Vec<(f32, f32)>>,
     pub line_color: Color,

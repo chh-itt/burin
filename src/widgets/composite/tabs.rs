@@ -16,6 +16,7 @@ use std::rc::Rc;
 
 // ── Tab data ─────────────────────────────────────────────────────
 
+/// Data for a single tab in a tab bar.
 pub struct Tab {
     pub label: String,
     pub icon: Option<Icon>,
@@ -63,6 +64,7 @@ struct TabElements {
 
 // ── TabBar ───────────────────────────────────────────────────────
 
+/// A horizontal bar of selectable tabs with keyboard navigation.
 pub struct TabBar {
     tabs: Vec<Tab>,
     active: Signal<usize>,
@@ -465,6 +467,7 @@ impl std::fmt::Debug for TabBar {
 
 // ── TabPanel ─────────────────────────────────────────────────────
 
+/// A content panel linked to a tab by index.
 pub struct TabPanel {
     index: usize,
     active: Signal<usize>,

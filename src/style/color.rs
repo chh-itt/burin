@@ -179,7 +179,7 @@ impl Color {
         }
     }
 
-    /// Inverse of [`to_linear`]: linear light back to sRGB-encoded RGB.
+    /// Inverse of `to_linear`: linear light back to sRGB-encoded RGB.
     pub fn from_linear(&self) -> Self {
         Self {
             r: Self::linear_to_srgb(self.r),

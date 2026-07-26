@@ -30,7 +30,7 @@ use crate::style::{Color, Size};
 /// Cached text area in local element coordinates.
 /// Converted to TextAreaDesc at replay time with current geometry + scroll offset.
 #[derive(Clone)]
-pub struct LocalTextArea {
+pub(crate) struct LocalTextArea {
     pub buffer: std::rc::Rc<std::cell::RefCell<cosmic_text::Buffer>>,
     pub generation: u64,
     pub scale: f32,
@@ -46,6 +46,7 @@ pub struct LocalTextArea {
 }
 
 impl LocalTextArea {
+    #[allow(dead_code)]
     pub fn to_world(
         &self,
         x: f32,
@@ -109,7 +110,7 @@ impl LocalTextArea {
 /// for bug-for-bug identical replay.  `decor_start` marks the index where
 /// decor commands begin, enabling partial re-recording of individual layers.
 #[derive(Clone)]
-pub struct CachedScene {
+pub(crate) struct CachedScene {
     pub local_items: Vec<painter::LocalDrawItem>,
     pub commands: Vec<DrawCommand>,
     pub local_text_areas: Vec<LocalTextArea>,
@@ -140,7 +141,7 @@ pub struct CachedScene {
 /// invalidation from geometry: scroll only shifts positions, it doesn't
 /// require re-recording draw commands.
 #[derive(Clone)]
-pub struct CachedSubtree {
+pub(crate) struct CachedSubtree {
     pub commands: Vec<DrawCommand>,
     pub text_areas: Vec<crate::render::wgpu::glyphon_bridge::TextAreaDesc>,
     /// Backdrop-blur regions produced by this subtree (screen-effect ops that
@@ -154,6 +155,7 @@ pub struct CachedSubtree {
     pub scroll_ox: f32,
     pub scroll_oy: f32,
     pub content_gen: u64,
+    #[allow(dead_code)]
     pub layout_gen: u64,
     pub scroll_gen: u64,
 }
