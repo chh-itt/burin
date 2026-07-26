@@ -37,6 +37,11 @@ pub enum TextInputType {
     Multiline,
 }
 
+/// A single-line or multi-line text field.
+///
+/// Binds to a `Signal<String>` for two-way text editing.  Supports
+/// placeholder text, max length, password masking, IME composition,
+/// and undo/redo.
 pub struct TextInput {
     value: Signal<String>,
     placeholder: String,

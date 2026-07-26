@@ -47,6 +47,7 @@ pub const GHOST_DIM: Color = Color::rgba8(0, 0, 0, 35);
 /// Drop-target highlight background.
 pub const DROP_HIGHLIGHT: Color = Color::rgba8(59, 130, 246, 50);
 
+/// Reusable drag-to-reorder controller for list-like widgets.
 pub struct ReorderController {
     /// Ordered list of item ElementIds (stable across pool re-labels).
     item_ids: Rc<RefCell<Vec<ElementId>>>,

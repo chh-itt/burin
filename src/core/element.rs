@@ -48,6 +48,12 @@ static NEXT_TREE_ORDER: AtomicU64 = AtomicU64::new(1);
 
 // ═══════════════════════ DirtyFlags ═══════════════════════
 
+/// Bitmask that tracks what changed on an element since last frame.
+///
+/// Three levels, each implying the ones before it:
+/// `MEASURE` (size changed) implies `REPOSITION` (position changed)
+/// implies `REPAINT` (pixels changed).  Bits 8..31 are reserved for
+/// third-party extensions; the framework only touches 0..7.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub struct DirtyFlags(pub(crate) u32);
@@ -85,7 +91,8 @@ impl DirtyFlags {
     /// Allocate one or more bits for a third-party dirty category.
     /// Returns a `DirtyFlags` value with the requested bits set.
     /// Panics if `name` is already registered or no bits remain.
-    pub fn register_custom(name: &'static str, bits: u32) -> Self {
+    #[allow(dead_code)]
+    pub(crate) fn register_custom(name: &'static str, bits: u32) -> Self {
         use std::collections::HashMap;
         use std::sync::OnceLock;
         static REGISTRY: OnceLock<std::sync::Mutex<HashMap<&'static str, u32>>> = OnceLock::new();
@@ -131,12 +138,17 @@ impl std::ops::Not for DirtyFlags {
 
 // ═══════════════════════ Misc types ═══════════════════════
 
+/// Primary axis for a layout container.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum LayoutDirection {
     Vertical,
     Horizontal,
 }
 
+/// Font configuration for deferred text measurement.
+///
+/// Stored on an element so the text shaper can compute intrinsic size
+/// later, without needing to hold a signal subscription.
 #[derive(Clone)]
 pub struct LazyFontParams {
     pub font_size: f32,
@@ -149,6 +161,12 @@ pub struct LazyFontParams {
 
 // ═══════════════════════ Slim Element ═══════════════════════
 
+/// A node in the retained widget tree.
+///
+/// Each widget mounts into one `Element`.  The element holds layout
+/// bounds, dirty flags, scroll state, and a `user_data` slot for
+/// widget-specific state.  Elements are stored in an [`ElementArena`]
+/// and accessed by [`ElementId`].
 pub struct Element {
     // Identity & tree
     id: ElementId,
@@ -1569,20 +1587,21 @@ impl Element {
         self.dirty.set(DirtyFlags(self.dirty.get().0 & 0b011));
     }
 
-    pub fn mark_surface_dirty_remote(dirty: &Rc<Cell<DirtyFlags>>, eid: ElementId) {
+    pub(crate) fn mark_surface_dirty_remote(dirty: &Rc<Cell<DirtyFlags>>, eid: ElementId) {
         dirty.set(dirty.get() | DirtyFlags::REPAINT);
         crate::core::dirty_registry::register_dirty(eid, DirtyFlags::REPAINT);
         crate::core::dirty_registry::bump_surface_gen_remote(eid);
         crate::core::dirty_registry::bump_subtree_gen(eid);
     }
 
-    pub fn mark_repaint_remote(dirty: &Rc<Cell<DirtyFlags>>, eid: ElementId) {
+    pub(crate) fn mark_repaint_remote(dirty: &Rc<Cell<DirtyFlags>>, eid: ElementId) {
         dirty.set(dirty.get() | DirtyFlags::REPAINT);
         crate::core::dirty_registry::register_dirty(eid, DirtyFlags::REPAINT);
         crate::core::dirty_registry::bump_subtree_gen(eid);
     }
 
-    pub fn mark_measure_remote(dirty: &Rc<Cell<DirtyFlags>>, eid: ElementId) {
+    #[allow(dead_code)]
+    pub(crate) fn mark_measure_remote(dirty: &Rc<Cell<DirtyFlags>>, eid: ElementId) {
         dirty.set(dirty.get() | DirtyFlags::MEASURE);
         crate::core::dirty_registry::register_dirty(eid, DirtyFlags::MEASURE);
         crate::core::dirty_registry::bump_subtree_gen(eid);
@@ -1634,6 +1653,12 @@ struct Slot {
     generation: u32,
 }
 
+/// Generational arena for the element tree.
+///
+/// Allocates elements from a slot array and reuses freed slots.  Each
+/// [`ElementId`] carries a generation counter so stale references
+/// after deletion are caught.  The root element is set once after the
+/// initial widget tree is mounted.
 pub struct ElementArena {
     slots: Vec<Slot>,
     /// Indices of freed slots available for immediate reuse.
@@ -2605,7 +2630,7 @@ impl ElementArena {
     }
 }
 
-pub fn process_exits(arena: &mut ElementArena) {
+pub(crate) fn process_exits(arena: &mut ElementArena) {
     let exits = crate::core::dirty_registry::drain_exits();
     if exits.is_empty() {
         return;
@@ -2631,7 +2656,7 @@ pub fn process_exits(arena: &mut ElementArena) {
     }
 }
 
-pub fn reapply_element_theme(
+pub(crate) fn reapply_element_theme(
     arena: &mut ElementArena,
     _root: ElementId,
     theme: &dyn crate::theme::Theme,
@@ -2668,7 +2693,7 @@ pub fn reapply_element_theme(
     }
 }
 
-pub fn apply_drag_layouts(arena: &mut ElementArena, _root: ElementId) {
+pub(crate) fn apply_drag_layouts(arena: &mut ElementArena, _root: ElementId) {
     let eids = crate::ecs::drain_drag_elements();
     for eid in eids {
         let mut cb = None;
@@ -2697,7 +2722,8 @@ pub fn apply_drag_layouts(arena: &mut ElementArena, _root: ElementId) {
     }
 }
 
-pub fn mark_subtree_repaint(arena: &ElementArena, root: ElementId) {
+#[allow(dead_code)]
+pub(crate) fn mark_subtree_repaint(arena: &ElementArena, root: ElementId) {
     let mut s = vec![root];
     while let Some(eid) = s.pop() {
         if let Some(el) = arena.get(eid) {
@@ -2710,7 +2736,7 @@ pub fn mark_subtree_repaint(arena: &ElementArena, root: ElementId) {
 }
 
 /// Fire on_mount callbacks for elements that were registered.
-pub fn fire_on_mount(arena: &mut ElementArena) {
+pub(crate) fn fire_on_mount(arena: &mut ElementArena) {
     let pending = crate::ecs::drain_mount_callbacks();
     for eid in pending {
         if let Some(lc) = arena.component_tables.borrow_mut().lc.get_mut(&eid) {

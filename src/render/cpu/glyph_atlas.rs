@@ -9,14 +9,14 @@
 use std::collections::HashMap;
 
 #[derive(Hash, PartialEq, Eq, Clone, Copy)]
-pub struct AtlasKey {
+pub(crate) struct AtlasKey {
     pub font_id: fontdb::ID,
     pub glyph_id: u16,
     pub font_size_bits: u32,
 }
 
 impl AtlasKey {
-    pub fn from_cache_key(ck: cosmic_text::CacheKey, font_id: fontdb::ID) -> Self {
+    pub(crate) fn from_cache_key(ck: cosmic_text::CacheKey, font_id: fontdb::ID) -> Self {
         Self {
             font_id,
             glyph_id: ck.glyph_id,
@@ -26,7 +26,7 @@ impl AtlasKey {
 }
 
 #[derive(Clone, Copy)]
-pub struct AtlasEntry {
+pub(crate) struct AtlasEntry {
     pub x: u32,
     pub y: u32,
     pub width: u32,
@@ -37,7 +37,7 @@ pub struct AtlasEntry {
     pub top: i32,
 }
 
-pub struct GlyphAtlas {
+pub(crate) struct GlyphAtlas {
     /// A8 alpha values, row-major.  Each byte is the glyph coverage (0-255).
     alpha: Vec<u8>,
     width: u32,
@@ -51,7 +51,7 @@ pub struct GlyphAtlas {
 
 impl GlyphAtlas {
     /// Create a new atlas with the given dimensions.
-    pub fn new(width: u32, height: u32) -> Self {
+    pub(crate) fn new(width: u32, height: u32) -> Self {
         Self {
             alpha: vec![0u8; (width * height) as usize],
             width,
@@ -68,7 +68,7 @@ impl GlyphAtlas {
     /// The `rasterize` closure receives (cache_key, font_id) and must return
     /// the Swash image data plus placement for a *Mask* glyph.  The image
     /// data is 1 byte per pixel (alpha).
-    pub fn get_or_insert(
+    pub(crate) fn get_or_insert(
         &mut self,
         key: AtlasKey,
         rasterize: impl FnOnce() -> Option<(Vec<u8>, u32, u32, i32, i32)>,
@@ -131,7 +131,7 @@ impl GlyphAtlas {
     }
 
     /// Clear all atlas entries and reset the allocation cursor.
-    pub fn clear(&mut self) {
+    pub(crate) fn clear(&mut self) {
         // No need to zero the buffer — it will be overwritten on re-insert.
         self.entries.clear();
         self.cursor_x = 0;
@@ -146,7 +146,7 @@ impl GlyphAtlas {
     /// row-major.  `dst_w`, `dst_h` are the buffer dimensions.  `dx`, `dy`
     /// are the top-left destination coordinates.
     /// `color_rgba` is `[r, g, b, a]` where each component is 0-255.
-    pub fn blit_to(
+    pub(crate) fn blit_to(
         &self,
         entry: &AtlasEntry,
         dx: i32,

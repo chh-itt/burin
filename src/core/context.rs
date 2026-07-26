@@ -9,7 +9,12 @@ use crate::theme::m3::roles::{ComponentRole, ResolvedComponentStyle};
 use crate::theme::M3Theme;
 use std::rc::Weak;
 
-/// Context provided during widget mount.
+/// Context passed to [`Widget::mount_box`](crate::core::Widget::mount_box).
+///
+/// Gives the widget access to the element arena, event registry, theme,
+/// clipboard, and the process-level app context (as a weak reference).
+/// Call [`child_with_events`](Self::child_with_events) to create scoped
+/// contexts when mounting children.
 pub struct MountContext<'a> {
     /// The single-source-of-truth element arena.
     pub arena: &'a mut ElementArena,
@@ -116,10 +121,15 @@ impl<'a> MountContext<'a> {
     }
 }
 
+/// Context passed to a widget's layout callback.
 pub struct LayoutCtx<'a> {
     pub(crate) _phantom: std::marker::PhantomData<&'a ()>,
 }
 
+/// Context passed to a widget's paint callback.
+///
+/// Carries the current viewport size and scale factor so the widget
+/// can position its draw commands in screen space.
 pub struct PaintCtx<'a> {
     pub viewport: crate::style::Size,
     pub scale_factor: f64,
@@ -143,6 +153,10 @@ impl<'a> PaintCtx<'a> {
     }
 }
 
+/// Context passed to event handlers registered via [`EventRegistry`].
+///
+/// Lets handlers stop propagation, prevent default behaviour, and
+/// interact with the window and clipboard.
 pub struct EventCtx<'a> {
     pub(crate) propagation_stopped: &'a mut bool,
     pub(crate) default_prevented: &'a mut bool,

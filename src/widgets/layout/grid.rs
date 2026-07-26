@@ -5,6 +5,7 @@ use crate::ecs::components;
 use crate::style::styled::{StyleRefinement, Styled};
 use crate::widgets::layout::apply_style;
 
+/// A grid container with configurable column count.
 pub struct GridRow {
     columns: u32,
     gap: f32,
@@ -14,6 +15,7 @@ pub struct GridRow {
     style: StyleRefinement,
 }
 
+/// A single grid cell with column span and offset.
 pub struct GridItem {
     cols: u32,
     offset: u32,

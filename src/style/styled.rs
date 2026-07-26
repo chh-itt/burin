@@ -5,6 +5,7 @@ use crate::style::{
     TextDirection,
 };
 
+/// Line decoration for text.
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum TextDecoration {
@@ -15,6 +16,7 @@ pub enum TextDecoration {
     Overline,
 }
 
+/// How text that overflows its container is handled.
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum TextOverflow {
@@ -23,6 +25,7 @@ pub enum TextOverflow {
     Ellipsis,
 }
 
+/// A drop shadow with color, offset, and blur radius.
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub struct Shadow {
@@ -43,6 +46,7 @@ impl Shadow {
     }
 }
 
+/// Blend mode for compositing a widget onto the scene.
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub enum BlendMode {
@@ -61,6 +65,9 @@ impl BlendMode {
     }
 }
 
+/// A backdrop blur with an optional colour tint.
+///
+/// Applied to the layer below the widget, not the widget itself.
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[cfg_attr(feature = "devtools", derive(serde::Serialize, serde::Deserialize))]
 pub struct BackdropFilter {

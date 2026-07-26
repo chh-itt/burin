@@ -71,6 +71,7 @@ pub struct DateRange {
     pub end: Date,
 }
 
+/// A date picker with a calendar dropdown and text input.
 pub struct DatePicker {
     #[cfg(feature = "ext-jiff")]
     date: Signal<Option<Date>>,

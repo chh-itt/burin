@@ -7,15 +7,15 @@
 use proptest::prelude::*;
 
 use auralis_signal::Signal;
-use burin::core::context::MountContext;
-use burin::core::element::ElementId;
-use burin::core::widget::Widget;
-use burin::layout::TaffyBridge;
-use burin::style::Rect;
-use burin::style::{Dimension, Styled};
-use burin::testing::TestHarness;
-use burin::widgets::display::Text;
-use burin::widgets::layout::{HStack, SizedBox, VStack};
+use crate::core::context::MountContext;
+use crate::core::element::ElementId;
+use crate::core::widget::Widget;
+use crate::layout::taffy_bridge::TaffyBridge;
+use crate::style::Rect;
+use crate::style::{Dimension, Styled};
+use crate::testing::TestHarness;
+use crate::widgets::display::Text;
+use crate::widgets::layout::{HStack, SizedBox, VStack};
 use std::collections::HashMap;
 
 /// Type-erased wrapper so recursively-built `Box<dyn Widget>` children can be
@@ -112,7 +112,7 @@ fn to_dim(d: Dim) -> Dimension {
 
 fn maybe_grow(w: Box<dyn Widget>, grow: bool) -> Box<dyn Widget> {
     if grow {
-        Box::new(burin::widgets::layout::Expanded::new(BoxedWidget(w)))
+        Box::new(crate::widgets::layout::Expanded::new(BoxedWidget(w)))
     } else {
         w
     }
@@ -162,7 +162,7 @@ fn build_widget(node: &Node) -> Box<dyn Widget> {
             grow,
             children,
         } => {
-            use burin::widgets::layout::{GridItem, GridRow};
+            use crate::widgets::layout::{GridItem, GridRow};
             let mut g = GridRow::new().columns(*cols);
             for c in children {
                 g = g.push(GridItem::new(BoxedWidget(build_widget(c))));
@@ -396,7 +396,7 @@ fn incremental_path_is_actually_exercised() {
 
 #[test]
 fn single_axis_row_contained_takes_incremental() {
-    use burin::style::{Dimension, Styled};
+    use crate::style::{Dimension, Styled};
     let sig = Signal::new(String::from("Hi"));
     let mut h = TestHarness::new(800.0, 600.0);
     // HStack width:100% is a direct child of a definite SizedBox -> x-independent
@@ -444,7 +444,7 @@ fn single_axis_row_contained_takes_incremental() {
 
 #[test]
 fn single_axis_wrapping_escalates() {
-    use burin::style::{Dimension, Styled};
+    use crate::style::{Dimension, Styled};
     let sig = Signal::new(String::from("short"));
     let mut h = TestHarness::new(800.0, 600.0);
     // A row (height stretched to a definite parent) whose child VStack is a

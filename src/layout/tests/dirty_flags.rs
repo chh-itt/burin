@@ -1,11 +1,11 @@
-use burin::core::dirty_registry;
-use burin::core::element::{DirtyFlags, Element, ElementArena};
-use burin::layout::dirty_propagation::process_dirty_set;
-use burin::style::Color;
+use crate::core::dirty_registry;
+use crate::core::element::{DirtyFlags, Element, ElementArena};
+use crate::layout::dirty_propagation::process_dirty_set;
+use crate::style::Color;
 
 fn el() -> Element {
     Element::new(std::rc::Rc::new(std::cell::RefCell::new(
-        burin::ecs::tables::ComponentTables::default(),
+        crate::ecs::tables::ComponentTables::default(),
     )))
 }
 

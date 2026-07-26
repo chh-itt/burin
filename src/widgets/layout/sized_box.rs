@@ -7,6 +7,7 @@ use crate::style::Dimension;
 use crate::widgets::layout::apply_style;
 use accesskit::Role;
 
+/// Constrain a child to a fixed width and height.
 pub struct SizedBox {
     width: Dimension,
     height: Dimension,

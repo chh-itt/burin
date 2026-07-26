@@ -13,6 +13,7 @@ use crate::style::TextAlign;
 use crate::theme::m3::roles::{ComponentRole, DisplayRole};
 use crate::widgets::display::{ContentFit, ImageData};
 
+/// A circular user avatar with initials or an image.
 pub struct Avatar {
     name: String,
     size: f32,
@@ -21,6 +22,7 @@ pub struct Avatar {
     style: StyleRefinement,
 }
 
+/// Image data for an avatar.
 pub struct AvatarImage {
     pixels: Vec<u8>,
     width: u32,

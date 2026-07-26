@@ -10,11 +10,13 @@ use crate::style::{Color, Rect};
 use crate::theme::m3::roles::{ComponentRole, InteractiveRole, ResolvedComponentStyle};
 
 #[derive(Clone)]
+/// A group of bar values with a label.
 pub struct BarGroup {
     pub label: String,
     pub values: Vec<f32>,
 }
 
+/// A vertical bar chart widget.
 pub struct BarChart {
     data: Signal<Vec<BarGroup>>,
     colors: Vec<Color>,
@@ -159,6 +161,7 @@ impl Widget for BarChart {
     }
 }
 
+/// Paint data for rendering a bar chart.
 pub struct BarChartData {
     pub data_signal: Signal<Vec<BarGroup>>,
     pub colors: Vec<Color>,

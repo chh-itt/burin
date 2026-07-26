@@ -14,6 +14,7 @@ use crate::style::TextAlign;
 use crate::theme::m3::roles::{ComponentRole, DisplayRole, InteractiveRole};
 use crate::theme::Intent;
 
+/// A small label for status or counts.
 pub struct Badge {
     label: String,
     background: Option<Color>,

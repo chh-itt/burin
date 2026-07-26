@@ -38,6 +38,7 @@ use crate::platform::portal::PortalHeight;
 use crate::style::Color;
 use crate::widgets::overlay::{PopoverGeometry, PopoverPlacement, PopoverPosition};
 
+/// Configuration for mounting a signal-driven anchored portal popup.
 pub struct PortalPopupConfig {
     pub open: Signal<bool>,
     pub anchor_id: ElementId,

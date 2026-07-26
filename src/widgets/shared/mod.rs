@@ -14,7 +14,7 @@ pub mod text_cell;
 
 pub use dropdown::{
     register_dropdown_portal, register_dropdown_unmount, register_overlay_lifecycle,
-    register_unmount_pop_modal, scroll_to_selected_on_open, subscribe_dropdown_reopen,
+    register_unmount_pop_modal, subscribe_dropdown_reopen,
 };
 pub use keyboard::{row_nav, RowNavOutcome};
 pub use portal::{mount_portal_popup, PortalPopupConfig};

@@ -141,7 +141,7 @@ thread_local! {
 /// Check whether a repaint is redundant (generation counters unchanged).
 /// Hook called from paint_element_tree when entering the re-record path with
 /// valid cache entries.
-pub fn check_over_render(
+pub(crate) fn check_over_render(
     id: crate::core::ElementId,
     surface_gen: u64,
     decor_gen: u64,
@@ -151,6 +151,6 @@ pub fn check_over_render(
 }
 
 /// Drain and return accumulated over-render warnings, and reset the detector.
-pub fn drain_over_render_warnings() -> Vec<String> {
+pub(crate) fn drain_over_render_warnings() -> Vec<String> {
     OVER_RENDER.with(|d| d.borrow_mut().drain_warnings())
 }

@@ -20,8 +20,8 @@
 
 pub(crate) mod clip;
 pub mod damage;
-pub mod glyph_atlas;
-pub mod glyph_cache;
+pub(crate) mod glyph_atlas;
+pub(crate) mod glyph_cache;
 mod image;
 pub(crate) mod shadow;
 mod surface;
@@ -46,10 +46,11 @@ use surface_cache::TextSurfaceCache;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-pub use damage::DamageTracker;
+pub(crate) use damage::DamageTracker;
 
 #[derive(Debug)]
-pub enum RendererError {
+#[allow(dead_code)]
+pub(crate) enum RendererError {
     Surface,
     NoAdapter,
 }
@@ -81,16 +82,16 @@ pub struct TinySkiaRenderer {
     /// window still responds to events.
     surface_init_failed: bool,
 
-    pub glyph_cache: GlyphCache,
+    pub(crate) glyph_cache: GlyphCache,
     pub swash_cache: cosmic_text::SwashCache,
     pub surface_cache: TextSurfaceCache,
-    pub glyph_atlas: GlyphAtlas,
+    pub(crate) glyph_atlas: GlyphAtlas,
 
     image_cache: ImageCache,
     shadow_cache: shadow::ShadowCache,
 
     /// Damage tracking (dirty bounds → inflated, disjoint repaint rects).
-    pub damage_tracker: DamageTracker,
+    pub(crate) damage_tracker: DamageTracker,
 
     frame_count: u64,
     clear_color: Color,
@@ -128,7 +129,7 @@ impl TinySkiaRenderer {
     /// a typical screen has 1-4 distinct rounded clip containers.
     const MASK_CACHE_CAP: usize = 8;
 
-    pub fn new(
+    pub(crate) fn new(
         window: std::sync::Arc<dyn winit::window::Window>,
         logical_width: f32,
         logical_height: f32,

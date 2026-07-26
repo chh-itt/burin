@@ -21,6 +21,7 @@ thread_local! {
 const GRACE_MS: u64 = 300;
 const SCHEDULER_KEY: u64 = crate::core::scheduler::keys::TOOLTIP;
 
+/// A tooltip that appears on hover with a configurable delay.
 pub struct Tooltip {
     child: Option<Box<dyn Widget>>,
     content: Option<Box<dyn Widget>>,

@@ -95,7 +95,8 @@ pub fn bind_dirty_measure<T: Clone + 'static>(
 
 /// Bind a `Signal<String>` to element label text, with REPAINT on change.
 /// Reads initial value, registers subscription.
-pub fn bind_label(
+#[allow(dead_code)]
+pub(crate) fn bind_label(
     element_id: crate::core::ElementId,
     dirty: Rc<std::cell::Cell<DirtyFlags>>,
     signal: &Signal<String>,
@@ -114,7 +115,8 @@ pub fn bind_label(
 }
 
 /// Bind a `Signal<bool>` to element visibility, with REPAINT on change.
-pub fn bind_visible(
+#[allow(dead_code)]
+pub(crate) fn bind_visible(
     element_id: crate::core::ElementId,
     dirty: Rc<std::cell::Cell<DirtyFlags>>,
     signal: &Signal<bool>,
@@ -133,7 +135,8 @@ pub fn bind_visible(
 }
 
 /// Bind a `Signal<Color>` to element rendering, with surface-level REPAINT.
-pub fn bind_color(
+#[allow(dead_code)]
+pub(crate) fn bind_color(
     element_id: crate::core::ElementId,
     dirty: Rc<std::cell::Cell<DirtyFlags>>,
     signal: &Signal<Color>,
@@ -152,7 +155,8 @@ pub fn bind_color(
 }
 
 /// Bind a `Signal<f32>` to element rendering, with REPAINT on change.
-pub fn bind_f32(
+#[allow(dead_code)]
+pub(crate) fn bind_f32(
     element_id: crate::core::ElementId,
     dirty: Rc<std::cell::Cell<DirtyFlags>>,
     signal: &Signal<f32>,
@@ -176,7 +180,7 @@ pub fn bind_f32(
 /// Marks both REPAINT and MEASURE since text content changes can affect
 /// the element's preferred size.
 /// Returns the initial signal value.
-pub fn bind_label_lazy(
+pub(crate) fn bind_label_lazy(
     label_cell: Rc<std::cell::Cell<String>>,
     text_gen_cell: Rc<std::cell::Cell<u64>>,
     dirty: Rc<std::cell::Cell<DirtyFlags>>,
@@ -330,7 +334,7 @@ pub fn apply_observed_subscriptions(element: &mut Element) {
 /// width, font metrics, theme switch) but the text string stays the same.
 ///
 /// Bumps `text_generation` and marks the element dirty.
-pub fn force_refresh_label(eid: ElementId) {
+pub(crate) fn force_refresh_label(eid: ElementId) {
     crate::core::element::with_ct_mut(|ct| {
         if let Some(tc) = ct.text.get_mut(&eid) {
             let old = tc.text_generation.get();
@@ -353,6 +357,6 @@ pub fn force_refresh_label(eid: ElementId) {
 /// feature is not enabled.  Used by DevTools to attribute dirty registrations
 /// to the signal whose subscriber callback is currently executing.
 #[cfg(feature = "devtools")]
-pub fn read_current_signal_addr() -> usize {
+pub(crate) fn read_current_signal_addr() -> usize {
     auralis_signal::CURRENT_NOTIFYING_SIGNAL.with(|c| c.get())
 }

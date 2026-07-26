@@ -35,7 +35,7 @@ pub use glyphon_bridge::{create_buffer, GlyphonBridge, TextAreaDesc};
 const MAX_IMAGE_DIM: u32 = 4096;
 
 /// Pre-computed mip chain for a single image.
-pub struct CpuImageMips {
+pub(crate) struct CpuImageMips {
     pub width: u32,
     pub height: u32,
     /// mip 0 = full resolution, each subsequent level halves both dims.
@@ -147,7 +147,7 @@ pub fn register_image(hash: u64, width: u32, height: u32, pixels: Rc<Vec<u8>>) {
 /// Register image data owned by `eid`: a per-hash refcount tracks how many
 /// live elements reference the pixels; the core teardown protocol decrements
 /// it and frees the entry (pixels + mips) when it reaches zero.
-pub fn register_image_for(
+pub(crate) fn register_image_for(
     eid: crate::core::ElementId,
     hash: u64,
     width: u32,
@@ -242,7 +242,7 @@ pub fn lookup_image(hash: u64) -> Option<(u32, u32, Rc<Vec<u8>>)> {
 }
 
 /// Look up (or lazily generate) the mip chain for an image.
-pub fn lookup_image_mips(hash: u64) -> Option<Rc<CpuImageMips>> {
+pub(crate) fn lookup_image_mips(hash: u64) -> Option<Rc<CpuImageMips>> {
     IMAGE_REGISTRY.with(|reg| {
         let mut reg = reg.borrow_mut();
         let entry = reg.get_mut(&hash)?;

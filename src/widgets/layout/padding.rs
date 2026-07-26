@@ -4,6 +4,7 @@ use crate::core::ElementId;
 use crate::ecs::components;
 use crate::style::Padding as PaddingStyle;
 
+/// Add padding around a single child.
 pub struct Padding {
     padding: PaddingStyle,
     child: Option<Box<dyn Widget>>,

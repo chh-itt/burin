@@ -7,9 +7,9 @@ pub mod dropdown;
 pub mod focus;
 pub mod focus_manager;
 pub mod focus_traversal;
-pub mod hit_test;
-pub mod overlay;
-pub mod propagation;
+    pub(crate) mod hit_test;
+    pub mod overlay;
+    pub(crate) mod propagation;
 pub mod recognizer;
 pub mod registry;
 pub mod translator;
@@ -25,11 +25,9 @@ pub use focus::{
 pub use focus_manager::FocusManager;
 pub use focus_traversal::{Direction, TabOrderPolicy, TraversalPolicy, WidgetOrderPolicy};
 pub use recognizer::{
-    drain_long_press_wins, process_pointer_event, register_recognizer, reset_all, scroll_capture,
-    take_click_suppressed, unregister_recognizer, DoubleTapRecognizer, DragRecognizer,
-    EagerDragRecognizer, GestureDomain, GestureWin, LongPressRecognizer, Recognizer,
-    RecognizerKind, RecognizerRegistration, RecognizerResult, ScrollRecognizer, TapRecognizer,
-    TOUCH_SLOP,
+    process_pointer_event, register_recognizer, unregister_recognizer, DoubleTapRecognizer,
+    DragRecognizer, EagerDragRecognizer, GestureDomain, GestureWin, LongPressRecognizer, Recognizer,
+    RecognizerKind, RecognizerResult, ScrollRecognizer, TapRecognizer,
 };
 pub use registry::{DragArbitration, EventRegistry};
 pub use translator::EventTranslator;

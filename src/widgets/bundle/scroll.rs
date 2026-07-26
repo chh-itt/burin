@@ -45,14 +45,14 @@ enum OffsetAxis {
 }
 
 /// Stored in container element's user_data so paint can read generation.
-pub struct ScrollGeneration(pub Rc<Cell<u64>>);
+pub(crate) struct ScrollGeneration(pub Rc<Cell<u64>>);
 
 /// Bump the `ScrollGeneration` counter on `eid`, if it has one.
 /// This MUST be called whenever scroll_offset is written outside of
 /// `ScrollBundle::apply_offset` (e.g. from A11y actions, kinetic scroll,
 /// `resolve_pending_scrolls`). Missing this bump causes stale subtree
 /// cache hits → ghost rendering.
-pub fn bump_scroll_generation(
+pub(crate) fn bump_scroll_generation(
     arena: &crate::core::element::ElementArena,
     eid: crate::core::element::ElementId,
 ) {
@@ -64,10 +64,10 @@ pub fn bump_scroll_generation(
 }
 
 /// Stored in container element's user_data so event handlers can access ScrollBundle.
-pub struct ScrollBundleRef(pub Rc<ScrollBundle>);
+pub(crate) struct ScrollBundleRef(pub Rc<ScrollBundle>);
 
 #[derive(Clone)]
-pub struct ScrollBundle {
+pub(crate) struct ScrollBundle {
     pub container_id: ElementId,
     pub clip_id: ElementId,
     pub scroll_offset: Rc<Cell<Vec2>>,
@@ -84,6 +84,7 @@ impl std::fmt::Debug for ScrollBundle {
     }
 }
 
+#[allow(dead_code)]
 impl ScrollBundle {
     /// Allocate container + clip elements, preallocate scroll/layout components,
     /// set overflow:Scroll, scroll_offset, content_bounds, scrollbar_width.
@@ -477,7 +478,7 @@ impl ScrollBundle {
 
 /// Try to set a scrollable element's offset through its ScrollBundle physics.
 /// Returns true if the element has a ScrollBundle and the offset was applied.
-pub fn try_set_offset(
+pub(crate) fn try_set_offset(
     arena: &crate::core::element::ElementArena,
     eid: ElementId,
     apply: impl FnOnce(&ScrollBundle, Vec2),
@@ -527,7 +528,7 @@ pub fn try_scroll_by(
 /// Mobile / touchscreen: Should work but NOT YET TESTED. The Simulation trait,
 /// ClampPhysics, BouncePhysics, and the O(k) frame_tick system are all platform-
 /// agnostic. When mobile input is added, test TouchPhase::Ended + fling at that time.
-pub fn try_fling(
+pub(crate) fn try_fling(
     arena: &crate::core::element::ElementArena,
     eid: ElementId,
     velocity: Vec2,
@@ -543,7 +544,7 @@ pub fn try_fling(
 
 /// Called from `process_frame_ticks` once per frame.
 /// Steps all active scroll simulations + animations (O(k), k = number of active flings + animations).
-pub fn process_active_simulations(arena: &crate::core::element::ElementArena) {
+pub(crate) fn process_active_simulations(arena: &crate::core::element::ElementArena) {
     let mut to_remove: Vec<usize> = Vec::new();
     let now = crate::core::clock::now();
 

@@ -105,15 +105,18 @@ pub fn push_a11y_action(action: A11yAction) {
 // `FrameHook::on_focus_transferred`.
 
 /// Marker user_data: numeric value set requested via accessibility.
-pub struct A11ySetValue {
+#[allow(dead_code)]
+pub(crate) struct A11ySetValue {
     pub value: f64,
 }
 /// Marker user_data: replace-selected-text requested via accessibility.
-pub struct A11yReplaceText {
+#[allow(dead_code)]
+pub(crate) struct A11yReplaceText {
     pub text: String,
 }
 /// Marker user_data: text-selection change requested via accessibility.
-pub struct A11yTextSelection {
+#[allow(dead_code)]
+pub(crate) struct A11yTextSelection {
     pub start: usize,
     pub end: usize,
 }

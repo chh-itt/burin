@@ -5,6 +5,10 @@ use crate::ecs::components;
 use crate::style::styled::{StyleRefinement, Styled};
 use crate::widgets::layout::apply_style;
 
+/// Stack children on top of each other (z-order by insertion).
+///
+/// Later children paint on top of earlier ones.  Use `.alignment()`
+/// to control how children are positioned within the stack.
 pub struct ZStack {
     children: Vec<Box<dyn Widget>>,
     style: StyleRefinement,

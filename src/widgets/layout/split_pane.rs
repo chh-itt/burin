@@ -15,6 +15,7 @@ use crate::event::{Key, Modifiers};
 use crate::style::styled::{StyleRefinement, Styled};
 use crate::style::Point;
 
+/// Which axis the splitter moves along.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum SplitDirection {
     Horizontal,
@@ -44,6 +45,10 @@ fn mark_dirty_tree(ids: &[ElementId]) {
     crate::core::app_context::with_current_app(|app| app.queue_clear_all_caches());
 }
 
+/// A resizable split pane with a draggable divider.
+///
+/// Contains two children and a handle between them.  Drag the handle
+/// to resize the panes.  Use `.direction()` to pick horizontal or vertical.
 pub struct SplitPane {
     first: Option<Box<dyn Widget>>,
     second: Option<Box<dyn Widget>>,

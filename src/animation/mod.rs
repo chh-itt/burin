@@ -73,7 +73,7 @@ struct ActiveAnimation {
 
 /// How an animation's eased progress (the `t` fed to `interpolate`) is
 /// produced from elapsed seconds.
-pub enum ProgressSource {
+pub(crate) enum ProgressSource {
     /// Fixed-duration easing curve: `ease(elapsed / duration)`, done at
     /// `elapsed >= duration`.
     Curve {
@@ -112,6 +112,7 @@ impl ProgressSource {
     }
 }
 
+/// Which property an animation targets.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum AnimatedProperty {
     Opacity,
@@ -138,6 +139,7 @@ pub enum AnimatedProperty {
     Custom(u64),
 }
 
+/// The value type being animated.
 #[derive(Clone, Debug, PartialEq)]
 pub enum AnimatedValue {
     Float(f32),
@@ -148,6 +150,9 @@ pub enum AnimatedValue {
 }
 
 /// Configuration for automatic property transitions.
+///
+/// Widgets that implement enter/exit animations use this to define
+/// which properties animate and on what curve.
 #[derive(Clone, Debug)]
 pub struct TransitionConfig {
     pub transitions: Vec<TransitionDef>,
@@ -165,6 +170,7 @@ impl TransitionConfig {
     }
 }
 
+/// One transition: a property, an easing curve, and a duration.
 #[derive(Clone, Copy, Debug)]
 pub struct TransitionDef {
     pub property: AnimatedProperty,
@@ -183,7 +189,7 @@ pub struct AnimationConfig {
 
 // ── Thread-local request queues ────────────────────────────────
 
-pub struct AnimRequest {
+pub(crate) struct AnimRequest {
     pub target: ElementId,
     pub property: AnimatedProperty,
     pub from: AnimatedValue,
@@ -193,7 +199,7 @@ pub struct AnimRequest {
     pub exit_complete: Option<Rc<std::cell::Cell<bool>>>,
 }
 
-pub struct ExitRequest {
+pub(crate) struct ExitRequest {
     pub target: ElementId,
     pub property: AnimatedProperty,
     pub to: AnimatedValue,
@@ -208,7 +214,8 @@ thread_local! {
 }
 
 /// Enqueue an exit animation from a widget callback.
-pub fn request_exit(
+#[allow(dead_code)]
+pub(crate) fn request_exit(
     target: ElementId,
     property: AnimatedProperty,
     to: AnimatedValue,
@@ -224,13 +231,13 @@ pub fn request_exit(
     });
 }
 
-pub fn drain_exit_requests() -> Vec<ExitRequest> {
+pub(crate) fn drain_exit_requests() -> Vec<ExitRequest> {
     PENDING_EXITS.with(|q| q.borrow_mut().drain(..).collect())
 }
 
 /// Cancel all active + pending animations targeting `id` (applied at the
 /// next `animation_phase`).
-pub fn request_cancel(target: ElementId) {
+pub(crate) fn request_cancel(target: ElementId) {
     PENDING_CANCELS.with(|q| q.borrow_mut().push(target));
 }
 
@@ -239,7 +246,7 @@ pub(crate) fn set_in_anim_apply(v: bool) {
 }
 
 /// If element has a transition for this property, auto-animate old→new.
-pub fn apply_transition(
+pub(crate) fn apply_transition(
     element: &crate::core::element::Element,
     property: AnimatedProperty,
     old_val: AnimatedValue,
@@ -294,7 +301,7 @@ pub fn request_anim(
 
 /// Enqueue an animation with an explicit progress source and optional
 /// completion callback (fired once, deferred to the next phase boundary).
-pub fn request_anim_with(
+pub(crate) fn request_anim_with(
     target: ElementId,
     property: AnimatedProperty,
     from: AnimatedValue,
@@ -319,7 +326,7 @@ pub fn request_anim_with(
 /// when the animation finishes, and the final animated value is NOT
 /// cleared so `process_exits` can detect completion even for
 /// non-Opacity properties (e.g. Background→transparent).
-pub fn request_exit_anim(
+pub(crate) fn request_exit_anim(
     target: ElementId,
     property: AnimatedProperty,
     from: AnimatedValue,
@@ -344,7 +351,7 @@ pub fn request_exit_anim(
 }
 
 /// Drain pending requests into the driver. Called by Window::on_frame.
-pub fn drain_requests(driver: &mut AnimationDriver) {
+pub(crate) fn drain_requests(driver: &mut AnimationDriver) {
     PENDING_CANCELS.with(|q| {
         for target in q.borrow_mut().drain(..) {
             driver.cancel_target(target);

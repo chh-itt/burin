@@ -13,12 +13,14 @@ use cosmic_text::Buffer;
 /// position determined at `set_composition`), and the raw winit byte-offset
 /// caret pair.  The caller stores this in `EditorState::composition`.
 #[derive(Clone, Debug)]
-pub struct Composition {
+#[allow(dead_code)]
+pub(crate) struct Composition {
     pub text: String,
     pub anchor: usize,                       // DocChar where preedit was spliced in
     pub caret_bytes: Option<(usize, usize)>, // winit raw byte offsets
 }
 
+#[allow(dead_code)]
 impl Composition {
     /// Safe byte-offset → char-offset conversion for the preedit caret.
     /// Non-char-boundary indices walk left to the nearest boundary; indices
@@ -103,7 +105,7 @@ impl Composition {
 
 /// Compute IME composition underline rects — one per visual row,
 /// handling soft-wrap inside the preedit span.
-pub fn composition_rects(
+pub(crate) fn composition_rects(
     buffer: &Buffer,
     text: &str,                           // spliced display text
     comp_range: (usize, usize),           // (start, end) DisplayChar

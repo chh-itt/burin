@@ -9,15 +9,16 @@ use rustc_hash::FxHashMap;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-pub struct FrameContext<'a> {
+pub(crate) struct FrameContext<'a> {
     pub app: &'a AppContext,
+    #[allow(dead_code)]
     pub phase: Cell<FramePhase>,
-    pub scene_cache: &'a RefCell<FxHashMap<ElementId, Rc<CachedScene>>>,
-    pub subtree_cache: &'a RefCell<FxHashMap<ElementId, Rc<CachedSubtree>>>,
+    pub(crate) scene_cache: &'a RefCell<FxHashMap<ElementId, Rc<CachedScene>>>,
+    pub(crate) subtree_cache: &'a RefCell<FxHashMap<ElementId, Rc<CachedSubtree>>>,
 }
 
 impl<'a> FrameContext<'a> {
-    pub fn new(
+    pub(crate) fn new(
         app: &'a AppContext,
         scene_cache: &'a RefCell<FxHashMap<ElementId, Rc<CachedScene>>>,
         subtree_cache: &'a RefCell<FxHashMap<ElementId, Rc<CachedSubtree>>>,

@@ -16,6 +16,11 @@ use std::rc::Rc;
 
 // ── Button ──
 
+/// A pressable button with a text label.
+///
+/// Fires an `.on_click()` callback when pressed.  Follows the active
+/// theme's button style for colours, border radius, and typography.
+/// Supports disabled, loading, and intent variants.
 pub struct Button {
     label: String,
     label_signal: Option<auralis_signal::Signal<String>>,

@@ -23,7 +23,7 @@ use std::collections::HashMap;
 /// Anti-aliasing / rounding safety margin (logical px).
 const MARGIN: f32 = 3.0;
 
-pub struct DamageTracker {
+pub(crate) struct DamageTracker {
     /// Last inflated visual rect per element, keyed by element id. Entries
     /// are dropped when the element disappears from the arena.
     prev_visual: HashMap<ElementId, Rect>,
@@ -102,6 +102,7 @@ impl DamageTracker {
     }
 
     /// Forget tracked state (e.g. after a full-tree rebuild).
+    #[allow(dead_code)]
     pub fn clear(&mut self) {
         self.prev_visual.clear();
     }

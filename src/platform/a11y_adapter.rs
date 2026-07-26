@@ -6,6 +6,7 @@
 use crate::platform::a11y_bridge::A11yBridge;
 use accesskit::TreeUpdate;
 
+/// Compatibility shim that delegates to the platform accessibility bridge.
 pub struct A11yAdapter {
     bridge: A11yBridge,
 }

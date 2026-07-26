@@ -178,12 +178,14 @@ enum AnimState {
 // ToastContainer widget
 // ═══════════════════════════════════════════════════════════════════
 
+/// Vertical screen edge where toasts appear.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum ToastPosition {
     Top,
     Bottom,
 }
 
+/// A container that displays queued toast notifications.
 pub struct ToastContainer {
     position: ToastPosition,
     max_width: f32,

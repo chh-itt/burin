@@ -16,6 +16,7 @@ use crate::widgets::shared::{mount_portal_popup, PortalPopupConfig};
 
 // ── Positioning types ─────────────────────────────────────────────
 
+/// Preferred position of a popover relative to its anchor.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 pub enum PopoverPosition {
     #[default]
@@ -49,6 +50,7 @@ pub enum FlipAxes {
     HorizontalOnly,
 }
 
+/// Configuration for popover positioning and auto-flip.
 #[derive(Clone, Copy, Debug)]
 pub struct PopoverPlacement {
     pub preferred_position: PopoverPosition,
@@ -76,6 +78,7 @@ impl Default for PopoverPlacement {
     }
 }
 
+/// Computed screen-space position and size of a popover.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct PopoverGeometry {
     pub x: f32,
@@ -256,6 +259,7 @@ const DEFAULT_POPOVER_WIDTH: f32 = 220.0;
 const DEFAULT_MAX_WIDTH: f32 = 400.0;
 const DEFAULT_CONTENT_HEIGHT: f32 = 0.0;
 
+/// An anchored popup overlay driven by an open signal.
 pub struct Popover {
     child: Option<Box<dyn Widget>>,
     content: Option<Box<dyn Widget>>,

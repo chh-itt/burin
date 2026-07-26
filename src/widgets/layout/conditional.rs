@@ -10,6 +10,10 @@ use crate::core::ElementId;
 use crate::ecs::components;
 use crate::style::styled::{StyleRefinement, Styled};
 
+/// Show one of two child widgets based on a condition.
+///
+/// Takes a `Signal<bool>` and two widget closures.  When the signal
+/// is true the first branch mounts; otherwise the second.
 pub struct Conditional {
     condition: Signal<bool>,
     true_widget: Option<Box<dyn Widget>>,

@@ -9,6 +9,7 @@ use crate::widgets::layout::apply_style;
 // ── BoxShape ──────────────────────────────────────────────────────
 
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
+/// The shape of a box decoration.
 pub enum BoxShape {
     #[default]
     Rectangle,
@@ -18,6 +19,7 @@ pub enum BoxShape {
 // ── BoxDecoration ─────────────────────────────────────────────────
 
 #[derive(Clone, Debug, Default)]
+/// Visual properties for a box background, border, and shadow.
 pub struct BoxDecoration {
     pub color: Option<Color>,
     pub gradient: Option<LinearGradient>,
@@ -101,6 +103,7 @@ impl BoxDecoration {
 
 // ── DecoratedBox ──────────────────────────────────────────────────
 
+/// A widget that paints a decoration behind its child.
 pub struct DecoratedBox {
     decoration: Option<BoxDecoration>,
     clip_children: bool,

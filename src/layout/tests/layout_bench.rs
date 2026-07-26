@@ -9,12 +9,12 @@
 
 use std::time::Instant;
 
-use burin::core::element::{ElementArena, ElementId};
-use burin::layout::TaffyBridge;
-use burin::style::{Rect, Size};
-use burin::testing::TestHarness;
-use burin::widgets::display::Text;
-use burin::widgets::layout::{HStack, SizedBox, VStack};
+use crate::core::element::{ElementArena, ElementId};
+use crate::layout::taffy_bridge::TaffyBridge;
+use crate::style::{Rect, Size};
+use crate::testing::TestHarness;
+use crate::widgets::display::Text;
+use crate::widgets::layout::{HStack, SizedBox, VStack};
 
 fn row(l: usize) -> HStack {
     let mut h = HStack::new();
@@ -125,7 +125,7 @@ fn bench_case(k: usize, m: usize, l: usize) {
         taffy.tree.mark_dirty(leaf_node).unwrap();
         let _ = taffy.compute_subtree(
             boundary_node,
-            burin::ecs::components::AxisPair::both(true),
+            crate::ecs::components::AxisPair::both(true),
             frozen,
             origin,
         );
@@ -329,8 +329,8 @@ fn verify_partial_freeze_reproduces_full() {
 #[test]
 #[ignore]
 fn measure_stretch_incremental_gap() {
-    use burin::widgets::display::Text;
-    use burin::widgets::layout::{HStack, VStack};
+    use crate::widgets::display::Text;
+    use crate::widgets::layout::{HStack, VStack};
 
     use auralis_signal::Signal;
 
@@ -371,7 +371,7 @@ fn measure_stretch_incremental_gap() {
 
     // find the bound text element
     let text_id = h
-        .find_all_sel(burin::testing::selector::by_role(accesskit::Role::Label))
+        .find_all_sel(crate::testing::selector::by_role(accesskit::Role::Label))
         .into_iter()
         .next();
     // fallback: DFS for an element whose text is "Hi"
@@ -394,8 +394,8 @@ fn measure_stretch_incremental_gap() {
             continue;
         }
         containers += 1;
-        let affected_false = !burin::core::dirty_registry::affected_by_child_size(*id);
-        let indep = burin::layout::taffy_bridge::size_independent_of_children(h.root(), *id);
+        let affected_false = !crate::core::dirty_registry::affected_by_child_size(*id);
+        let indep = crate::layout::taffy_bridge::size_independent_of_children(h.root(), *id);
         if affected_false || indep.x || indep.y {
             cur_boundaries += 1;
         }
@@ -411,16 +411,16 @@ fn measure_stretch_incremental_gap() {
 
     if let Some(tid) = text_id {
         // walk ancestors, print boundary status
-        let mut cur = burin::core::dirty_registry::parent_of(tid);
+        let mut cur = crate::core::dirty_registry::parent_of(tid);
         let mut chain = Vec::new();
         while let Some(p) = cur {
-            let affected_false = !burin::core::dirty_registry::affected_by_child_size(p);
-            let indep = burin::layout::taffy_bridge::size_independent_of_children(h.root(), p);
+            let affected_false = !crate::core::dirty_registry::affected_by_child_size(p);
+            let indep = crate::layout::taffy_bridge::size_independent_of_children(h.root(), p);
             chain.push(format!(
                 "{:?}: !affected={} indep=({},{})",
                 p, affected_false, indep.x, indep.y
             ));
-            cur = burin::core::dirty_registry::parent_of(p);
+            cur = crate::core::dirty_registry::parent_of(p);
         }
         println!("[GAP] ancestor chain of bound text (leaf->root):");
         for c in &chain {

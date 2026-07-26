@@ -5,6 +5,10 @@ use crate::ecs::components;
 use crate::style::styled::{StyleRefinement, Styled};
 use crate::widgets::layout::apply_style;
 
+/// A horizontal stack of widgets with configurable gap and alignment.
+///
+/// Children are laid out left to right.  Use `.push()` to add children
+/// and `.gap()` to set spacing between them.
 pub struct HStack {
     children: Vec<Box<dyn Widget>>,
     style: StyleRefinement,

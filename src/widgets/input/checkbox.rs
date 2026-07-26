@@ -24,6 +24,10 @@ pub struct CheckboxIconState {
 
 // ── Widget ──
 
+/// A checkbox with checked, unchecked, and indeterminate states.
+///
+/// Backed by a `Signal<bool>`.  Supports an `.on_value_changed()` callback
+/// and can be styled as a switch or radio button via the builder.
 pub struct Checkbox {
     checked: auralis_signal::Signal<bool>,
     indeterminate: auralis_signal::Signal<bool>,

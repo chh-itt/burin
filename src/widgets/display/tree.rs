@@ -28,6 +28,7 @@ use crate::widgets::shared::{
 
 // ── TreeNode trait ──
 
+/// Trait for tree node data that supports children and expansion state.
 pub trait TreeNode: Sized {
     type Id: Clone + Eq + Hash + 'static;
 
@@ -85,6 +86,7 @@ struct TreeData<T> {
 
 // ── Tree widget ──
 
+/// A virtualized tree view with expand/collapse, selection, and indentation.
 pub struct Tree<T: TreeNode + Clone + 'static> {
     roots: Signal<Vec<T>>,
     selected: Option<Signal<Option<T::Id>>>,

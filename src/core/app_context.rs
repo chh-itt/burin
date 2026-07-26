@@ -188,6 +188,7 @@ impl Default for ResourceDomain {
     }
 }
 
+/// Per-window application context holding all per-frame state domains.
 pub struct AppContext {
     pub(crate) dirty: DirtyDomain,
     pub(crate) elements: ElementDomain,

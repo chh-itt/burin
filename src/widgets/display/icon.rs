@@ -18,6 +18,7 @@ pub struct IconPathData {
     pub stroke: kurbo::Stroke,
 }
 
+/// A glyph or vector icon.
 pub struct Icon {
     icon: IconKind,
     style: StyleRefinement,

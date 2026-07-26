@@ -6,6 +6,10 @@ use crate::core::ElementId;
 use crate::ecs::components;
 use crate::style::styled::{StyleRefinement, Styled};
 
+/// An image loaded from a file path or raw bytes.
+///
+/// Supports PNG, JPEG, GIF, and WebP formats.  Use `.fit()` to control
+/// how the image scales within its bounds.
 pub struct Image {
     pub pixels: Vec<u8>,
     pub width: u32,
@@ -14,6 +18,7 @@ pub struct Image {
     pub style: StyleRefinement,
 }
 
+/// How an image is scaled to fit its container.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub enum ContentFit {
     #[default]

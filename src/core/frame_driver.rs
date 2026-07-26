@@ -26,7 +26,7 @@ thread_local! {
 }
 
 /// Per-frame mutable state bundle — borrowed disjointly from WindowState / TestHarness.
-pub struct FrameState<'a> {
+pub(crate) struct FrameState<'a> {
     pub arena: &'a mut ElementArena,
     pub taffy: &'a mut TaffyBridge,
     pub events: &'a mut EventRegistry,
@@ -37,8 +37,9 @@ pub struct FrameState<'a> {
 }
 
 /// Per-frame read-only input (all diverging points made explicit).
-pub struct FrameInput {
+pub(crate) struct FrameInput {
     pub size: Size,
+    #[allow(dead_code)]
     pub frame_id: u64,
     pub is_first_frame: bool,
     pub force_layout: bool,
@@ -47,7 +48,9 @@ pub struct FrameInput {
     pub fg: Color,
     pub highlight_mode: FocusHighlightMode,
     pub now: Instant,
+    #[allow(dead_code)]
     pub scroll_friction: f32,
+    #[allow(dead_code)]
     pub scroll_stop_speed: f32,
     /// Caller-side coalescing: skip producing paint output this frame
     /// (window: `coalesce_skip_paint`; harness: false).
@@ -56,7 +59,7 @@ pub struct FrameInput {
 
 /// Platform-injected seam hook. Runs at SEAM 1 (after dirty, before layout)
 /// and inside SEAM 2 (`drive_frame_platform`) for platform follow-ups.
-pub trait FrameHook {
+pub(crate) trait FrameHook {
     /// After dirty processing (before layout). Returns whether to force a
     /// full taffy relayout (OR'd with `FrameInput.force_layout`).
     fn on_after_dirty(&mut self, _arena: &mut ElementArena, _events: &mut EventRegistry) -> bool {
@@ -70,13 +73,13 @@ pub trait FrameHook {
 }
 
 /// Harness default (no-op hook).
-pub struct NoHook;
+pub(crate) struct NoHook;
 impl FrameHook for NoHook {}
 
 /// Intermediate result of `drive_frame_layout`, carried across SEAM 2 to
 /// `drive_frame_paint`. Owned data only (no borrows) so the caller can use
 /// `&mut self` freely for platform work between the two phases.
-pub struct LayoutStage {
+pub(crate) struct LayoutStage {
     pub root_id: ElementId,
     pub processed_all: Vec<ElementId>,
     pub paint_roots: Vec<ElementId>,
@@ -85,7 +88,7 @@ pub struct LayoutStage {
 }
 
 /// Per-frame output — caller decides: window submits to renderer, harness stores in last_scene.
-pub struct FrameOutcome {
+pub(crate) struct FrameOutcome {
     pub painted: bool,
     pub commands: Vec<DrawCommand>,
     pub text_areas: Vec<TextAreaDesc>,
@@ -93,12 +96,14 @@ pub struct FrameOutcome {
     pub processed_all: Vec<ElementId>,
     pub paint_roots: Vec<ElementId>,
     pub repaint_ids: Vec<ElementId>,
+    #[allow(dead_code)]
     pub root_flags: DirtyFlags,
+    #[allow(dead_code)]
     pub did_layout: bool,
 }
 
 /// Extra state for SEAM 2 that lives in the caller (window/harness).
-pub struct PlatformArgs<'a> {
+pub(crate) struct PlatformArgs<'a> {
     /// Active drag ghost element + current cursor position, if a
     /// drag-and-drop operation is in flight.
     pub drag_ghost: Option<(ElementId, crate::style::Point)>,
@@ -114,7 +119,7 @@ pub struct PlatformArgs<'a> {
 /// harness only drained autofocus (with weaker semantics) — tests could
 /// pass while production diverged. Platform-only follow-ups (IME) are
 /// injected via [`FrameHook::on_focus_transferred`].
-pub fn drive_frame_platform(
+pub(crate) fn drive_frame_platform(
     st: FrameState<'_>,
     stage: &LayoutStage,
     input: &FrameInput,
@@ -196,7 +201,7 @@ pub fn drive_frame_platform(
 /// Takes `FrameState` **by value** so the borrow of the caller's fields is
 /// released when this returns — letting the caller use `&mut self` freely for
 /// SEAM 2 platform work before calling `drive_frame_paint`.
-pub fn drive_frame_layout(
+pub(crate) fn drive_frame_layout(
     st: FrameState<'_>,
     input: &FrameInput,
     hook: &mut dyn FrameHook,
@@ -418,7 +423,7 @@ pub fn drive_frame_layout(
 
 /// Phase 2: autofocus → animation → recheck → paint → clear → exits.
 /// Called after the caller's SEAM 2 platform work. Takes a fresh `FrameState`.
-pub fn drive_frame_paint(
+pub(crate) fn drive_frame_paint(
     st: FrameState<'_>,
     fcx: &crate::core::frame_context::FrameContext<'_>,
     input: &FrameInput,

@@ -18,6 +18,11 @@ pub enum ScrollDirection {
     Both,
 }
 
+/// A scrollable container that clips its child and shows scrollbars.
+///
+/// Wraps a single child widget in a virtual viewport.  Use
+/// `.scroll_direction()` to lock the axis and `.physics()` to set
+/// the scroll physics (bouncing, clamping, or custom).
 pub struct ScrollView {
     child: Option<Box<dyn Widget>>,
     direction: ScrollDirection,

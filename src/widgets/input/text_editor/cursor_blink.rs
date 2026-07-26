@@ -2,10 +2,12 @@ use crate::core::blink::BlinkTimer;
 use web_time::Instant;
 
 /// TextInput-specific blink state wrapping BlinkTimer.
-pub struct CursorBlink {
+#[allow(dead_code)]
+pub(crate) struct CursorBlink {
     timer: BlinkTimer,
 }
 
+#[allow(dead_code)]
 impl CursorBlink {
     pub fn new(period_ms: u64, pause_ms: u64) -> Self {
         Self {

@@ -11,6 +11,7 @@ use crate::widgets::input::Button;
 
 // ── AccordionSection ──
 
+/// A collapsible section with a title and content body.
 pub struct AccordionSection {
     pub title: String,
     pub subtitle: Option<String>,
@@ -41,6 +42,7 @@ impl AccordionSection {
 
 // ── Accordion ──
 
+/// A vertically stacked list of collapsible sections.
 pub struct Accordion {
     sections: Vec<AccordionSection>,
     open_signal: Signal<HashSet<usize>>,

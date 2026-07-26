@@ -25,6 +25,7 @@ use crate::widgets::shared::dropdown::{
 };
 use crate::widgets::shared::SelectionBg;
 
+/// A searchable dropdown with text input and filtered options.
 pub struct ComboBox<T: Clone + 'static> {
     selected: Signal<Option<T>>,
     options: Vec<T>,

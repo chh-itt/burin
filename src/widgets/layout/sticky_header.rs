@@ -31,6 +31,7 @@ use crate::style::Vec2;
 
 // ── Direction ──
 
+/// Which edge the header sticks to during scroll.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum StickyDirection {
     Top,
@@ -338,6 +339,10 @@ fn find_scroll_parent(eid: ElementId) -> Option<ElementId> {
 
 // ── Widget ──
 
+/// A header that pins to the top or bottom of its scroll container.
+///
+/// Use `.mode()` to pick between stacking (headers accumulate) and
+/// push-up (iOS-style, only one visible at a time).
 pub struct StickyHeader {
     child: Option<Box<dyn Widget>>,
     top_offset: f32,
