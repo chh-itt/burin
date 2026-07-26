@@ -9,7 +9,12 @@ use crate::event::FocusManager;
 
 /// Run all invariants against the current harness state.
 /// Called automatically at the end of `run_frame()` in debug builds.
-pub(crate) fn check_all(arena: &ElementArena, root_id: ElementId, focus: &FocusManager, frame_id: u64) {
+pub(crate) fn check_all(
+    arena: &ElementArena,
+    root_id: ElementId,
+    focus: &FocusManager,
+    frame_id: u64,
+) {
     check_tree_invariants(arena, root_id, frame_id);
     check_focus_invariants(arena, focus, frame_id);
     check_dirty_invariants(frame_id);

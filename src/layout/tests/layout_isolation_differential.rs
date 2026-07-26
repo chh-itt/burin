@@ -6,7 +6,6 @@
 
 use proptest::prelude::*;
 
-use auralis_signal::Signal;
 use crate::core::context::MountContext;
 use crate::core::element::ElementId;
 use crate::core::widget::Widget;
@@ -16,6 +15,7 @@ use crate::style::{Dimension, Styled};
 use crate::testing::TestHarness;
 use crate::widgets::display::Text;
 use crate::widgets::layout::{HStack, SizedBox, VStack};
+use auralis_signal::Signal;
 use std::collections::HashMap;
 
 /// Type-erased wrapper so recursively-built `Box<dyn Widget>` children can be

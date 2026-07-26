@@ -12,7 +12,7 @@ pub mod tables;
 
 pub(crate) use registry::{
     drain_a11y_changed, drain_drag_elements, drain_mount_callbacks, drain_theme_elements,
-    mark_a11y_changed, pending_scroll_elements, register_drag_element,
-    register_on_mount, register_pending_scroll, register_scrollable, register_theme_element,
-    scrollable_elements, unregister_element, unregister_pending_scroll, unregister_scrollable,
+    mark_a11y_changed, pending_scroll_elements, register_drag_element, register_on_mount,
+    register_pending_scroll, register_scrollable, register_theme_element, scrollable_elements,
+    unregister_element, unregister_pending_scroll, unregister_scrollable,
 };

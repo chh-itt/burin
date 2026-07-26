@@ -143,7 +143,11 @@ pub(crate) fn run_pre_passes(arena: &ElementArena) {
 /// check exit_pending flags. `now` is the clock source — both callers pass
 /// `crate::core::clock::now()` so the path is identical (wall-clock in
 /// production, virtual clock under test).
-pub(crate) fn animation_phase(arena: &mut ElementArena, animations: &mut AnimationDriver, now: Instant) {
+pub(crate) fn animation_phase(
+    arena: &mut ElementArena,
+    animations: &mut AnimationDriver,
+    now: Instant,
+) {
     for req in crate::animation::drain_exit_requests() {
         if let Some(el) = arena.get_mut(req.target) {
             el.animate_exit(req.property, req.to, req.animation);

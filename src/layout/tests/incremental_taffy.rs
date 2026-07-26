@@ -4,7 +4,6 @@
 //! structural changes (add/remove/slot_inactive), cross-check vs full rebuild,
 //! and regression tests for bugs #1 and #2.
 
-use auralis_signal::Signal;
 use crate::core::dirty_registry;
 use crate::core::ElementId;
 use crate::layout::taffy_bridge::TaffyBridge;
@@ -14,6 +13,7 @@ use crate::testing::TestHarness;
 use crate::widgets::display::Text;
 use crate::widgets::input::{Button, TextInput};
 use crate::widgets::layout::{Conditional, HStack, VStack};
+use auralis_signal::Signal;
 use std::collections::HashMap;
 
 // ── Helper: run a full rebuild from scratch on a separate TaffyBridge ──

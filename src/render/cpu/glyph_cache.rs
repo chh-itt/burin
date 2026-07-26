@@ -38,7 +38,12 @@ pub(crate) struct BitmapKey {
 }
 
 impl BitmapKey {
-    pub(crate) fn new(font_id: fontdb::ID, glyph_id: u16, size_bits: u16, color_rgb: [u8; 3]) -> Self {
+    pub(crate) fn new(
+        font_id: fontdb::ID,
+        glyph_id: u16,
+        size_bits: u16,
+        color_rgb: [u8; 3],
+    ) -> Self {
         Self {
             font_id,
             glyph_id,
