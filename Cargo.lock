@@ -672,7 +672,7 @@ checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
 
 [[package]]
 name = "burin"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "accesskit",
  "accesskit_macos",
@@ -728,7 +728,7 @@ dependencies = [
 
 [[package]]
 name = "burin-platform"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "accesskit",
  "accesskit_macos",
