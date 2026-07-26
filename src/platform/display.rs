@@ -5,17 +5,17 @@
 //!
 //! ## Entry points
 //!
-//! - [`WindowHandle::current_monitor`] — the monitor the window is on
-//! - [`WindowHandle::available_monitors`] — all connected monitors
-//! - [`WindowHandle::primary_monitor`] — the primary monitor
+//! - `WindowHandle::current_monitor` — the monitor the window is on
+//! - `WindowHandle::available_monitors` — all connected monitors
+//! - `WindowHandle::primary_monitor` — the primary monitor
 
 use std::fmt;
 
 /// Handle to a connected display monitor.
 ///
-/// Obtained via [`WindowHandle::current_monitor`],
-/// [`WindowHandle::available_monitors`], or
-/// [`WindowHandle::primary_monitor`].
+/// Obtained via `WindowHandle::current_monitor`,
+/// `WindowHandle::available_monitors`, or
+/// `WindowHandle::primary_monitor`.
 ///
 /// Comparison is based on per-session identity (internal platform handle).
 /// For cross-session persistence, use [`MonitorHandle::name`] + [`MonitorHandle::size`]
@@ -72,7 +72,7 @@ impl MonitorHandle {
 
     /// Returns `true` if this monitor is the primary monitor.
     ///
-    /// `primary` should be obtained from [`WindowHandle::primary_monitor`].
+    /// `primary` should be obtained from `WindowHandle::primary_monitor`.
     pub fn is_primary(&self, primary: &MonitorHandle) -> bool {
         self.0.eq(&primary.0)
     }

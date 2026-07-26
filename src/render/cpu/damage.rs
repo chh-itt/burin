@@ -10,7 +10,7 @@
 //! - **moves**: the previously-painted area (the "vacated" region) was never
 //!   repainted, leaving ghosts.
 //!
-//! [`DamageTracker`] therefore computes an **inflated visual rect** per dirty
+//! `DamageTracker` therefore computes an **inflated visual rect** per dirty
 //! element (bounds ∪ shadow/outline extent, transformed), unions it with the
 //! element's *previous* visual rect, and finally makes the merged rectangles
 //! **disjoint** — overlapping damage rects would double-composite translucent

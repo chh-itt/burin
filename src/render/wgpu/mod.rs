@@ -133,11 +133,11 @@ static ELEMENT_IMAGES: RefCell<HashMap<crate::core::ElementId, Vec<u64>>> = RefC
 ///
 /// If the image exceeds MAX_IMAGE_DIM (4096) in either dimension it is
 /// box-filtered down on registration.  Mip chain generation is deferred
-/// to [`lookup_image_mips`] (first render time), so images that are
+/// to `lookup_image_mips` (first render time), so images that are
 /// registered but never rendered incur no mip cost.
 ///
 /// Entries registered through this anonymous form are PINNED (never evicted).
-/// Prefer [`register_image_for`] from widget mounts so pixel data is freed
+/// Prefer `register_image_for` from widget mounts so pixel data is freed
 /// when the last referencing element is torn down.
 pub fn register_image(hash: u64, width: u32, height: u32, pixels: Rc<Vec<u8>>) {
     IMAGE_REFS.with(|r| r.borrow_mut().entry(hash).or_insert((0, false)).1 = true);

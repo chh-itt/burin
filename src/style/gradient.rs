@@ -71,7 +71,7 @@ impl LinearGradient {
         Self::build(GradientKind::Linear, start, end, stops)
     }
 
-    /// Linear gradient (explicit alias of [`new`]).
+    /// Linear gradient (explicit alias of `new`).
     pub fn linear(start: (f32, f32), end: (f32, f32), stops: &[(Color, f32)]) -> Self {
         Self::build(GradientKind::Linear, start, end, stops)
     }

@@ -4,7 +4,7 @@
 //! 1. **App shortcuts** — always active when the window has focus.
 //! 2. **Widget shortcuts** — active only when a specific widget is focused.
 //!    Widget bindings override app bindings for the same chord.
-//! 3. **System global hotkeys** — handled by [`GlobalHotkeyManager`],
+//! 3. **System global hotkeys** — handled by `GlobalHotkeyManager`,
 //!    active even when the window is NOT focused.
 //!
 //! Default app-level bindings for standard editing and navigation are

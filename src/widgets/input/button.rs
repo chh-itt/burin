@@ -96,7 +96,7 @@ impl Button {
         self.on_key_up = Some(Box::new(f));
         self
     }
-    /// Bind a Signal<String> for reactive label updates.
+    /// Bind a `Signal<String>` for reactive label updates.
     /// The button text updates every frame from the signal.
     pub fn bind(mut self, signal: auralis_signal::Signal<String>) -> Self {
         self.label = signal.read();

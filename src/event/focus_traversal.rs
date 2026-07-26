@@ -1,7 +1,7 @@
 //! Focus traversal policies: pluggable strategies for Tab order and
 //! arrow-key directional navigation.
 //!
-//! Each [`FocusScope`](super::FocusScope) can carry a policy that controls
+//! Each `FocusScope` can carry a policy that controls
 //! the order of focusable elements within that scope. The default
 //! [`TabOrderPolicy`] matches the framework's original behaviour
 //! (`tab_index` + `tree_order`).  [`ReadingOrderPolicy`] sorts spatially
@@ -24,7 +24,7 @@ pub enum Direction {
 
 /// Pluggable focus traversal strategy.
 ///
-/// Assigned per [`FocusScope`](super::FocusScope) to control:
+/// Assigned per `FocusScope` to control:
 /// - **Tab / Shift+Tab** order via [`sorted`](TraversalPolicy::sorted)
 /// - **Arrow-key** navigation via [`in_direction`](TraversalPolicy::in_direction)
 pub trait TraversalPolicy: std::fmt::Debug {
@@ -45,7 +45,7 @@ pub trait TraversalPolicy: std::fmt::Debug {
 // ── TabOrderPolicy ──────────────────────────────────────────────
 
 /// Default policy: elements are ordered by `(tab_index DESC, tree_order ASC)`
-/// — exactly the order produced by [`ensure_focus_order`].
+/// — exactly the order produced by `ensure_focus_order`.
 #[derive(Debug)]
 pub struct TabOrderPolicy;
 

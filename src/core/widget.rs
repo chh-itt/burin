@@ -6,7 +6,7 @@ use crate::core::element::ElementId;
 /// Widgets can either override `mount_box` directly (full control),
 /// or use the declarative `build_element` with `ElementBuilder`.
 pub trait Widget: 'static {
-    /// Consume this widget and create a retained [`Element`] in the arena.
+    /// Consume this widget and create a retained [`Element`](crate::core::element::Element) in the arena.
     /// Returns the [`ElementId`] of the newly created element.
     fn mount_box(self: Box<Self>, ctx: &mut MountContext<'_>) -> ElementId;
 

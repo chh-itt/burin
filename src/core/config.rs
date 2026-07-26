@@ -620,7 +620,7 @@ impl ElementBuilder {
     }
 
     /// Declare which ECS components this element uses.
-    /// Components declared here are pre-allocated during [`build`],
+    /// Components declared here are pre-allocated during `build`,
     /// ensuring the element is visible to O(k) component-filtered
     /// queries from the moment of creation.
     ///

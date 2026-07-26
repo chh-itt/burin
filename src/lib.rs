@@ -45,7 +45,7 @@
 //! | [`ecs`] | Thread-local tracking sets for O(k) operations (theme/drag/scroll/a11y) |
 //! | [`testing`] | TestHarness — headless full-frame simulation without window/GPU |
 //! | [`debug`] | Debug utilities |
-//! | [`i18n`] | Internationalization (Fluent) |
+//! | `i18n` | Internationalization (Fluent) |
 //! | [`resource`] | Embedded assets (fonts, icons) |
 //!
 //! ## Features

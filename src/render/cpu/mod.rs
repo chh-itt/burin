@@ -12,7 +12,7 @@
 //! tiny-skia draw calls, the glyph-atlas blitter, image blits and
 //! `clear_rect` — MUST produce this layout.  The one and only conversion
 //! to softbuffer's `0RGB` (`R` in bits 16-23) happens in [`TinySkiaRenderer::present`]
-//! via [`rgba_u32_to_softbuffer`].
+//! via `rgba_u32_to_softbuffer`.
 //!
 //! (Audit 2026-07-16: previously the buffer mixed two layouts — tiny-skia
 //! wrote RGBA while text/images/clear wrote 0RGB — so every rect, gradient,

@@ -17,7 +17,7 @@ use crate::core::error::{panic_to_string, push_error, UiError};
 use crate::style::{Color, Rect, TextAlign};
 
 /// Text rendering instruction produced during the paint phase and consumed
-/// by [`GlyphonBridge::prepare`] during the GPU execution phase.
+/// by `GlyphonBridge::prepare` during the GPU execution phase.
 #[derive(Clone)]
 pub struct TextAreaDesc {
     /// Shaped text buffer to render.
@@ -146,7 +146,7 @@ impl GlyphonBridge {
     }
 
     /// Prepare one z-layer's text into a freshly-allocated pooled
-    /// [`TextRenderer`] and return its index (pass it to [`render_layer`]).
+    /// [`TextRenderer`] and return its index (pass it to `render_layer`).
     ///
     /// Each call advances the pool cursor so distinct layers never share a
     /// renderer — their instance buffers must not clobber each other within a
@@ -292,7 +292,7 @@ impl GlyphonBridge {
         }
     }
 
-    /// Render a layer previously prepared via [`prepare_layer`], by its index.
+    /// Render a layer previously prepared via `prepare_layer`, by its index.
     /// Must be called inside an active render pass.
     pub fn render_layer(&self, idx: usize, pass: &mut wgpu::RenderPass<'_>) {
         let Some(renderer) = self.renderers.get(idx) else {

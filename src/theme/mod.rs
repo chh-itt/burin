@@ -5,12 +5,12 @@
 //! - **Layer 1 (Ambient)**: Zero-config environment colors. Every widget
 //!   defaults to these — no code needed for a neutral look.
 //! - **Layer 2 (Semantic)**: Intent-driven colors via `.intent(Primary)`.
-//!   Maps directly to the 7-intent [`SemanticPalette`].
-//! - **Layer 3 (Direct)**: Full token-level override via [`Styled`] methods
+//!   Maps directly to the 7-intent `SemanticPalette`.
+//! - **Layer 3 (Direct)**: Full token-level override via [`Styled`](crate::style::styled::Styled) methods
 //!   or by mutating the [`Theme`] struct fields.
 //!
 //! Widgets never hardcode visual properties — all defaults flow from Theme
-//! through [`MountContext`] to widget [`mount_box`].
+//! through `MountContext` to widget `mount_box`.
 
 pub mod apply;
 pub mod auto_switch;

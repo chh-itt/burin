@@ -5,7 +5,7 @@
 //! mapping physical keys to semantic actions (app-level or per-widget), and a
 //! handler chain in [`EventRegistry`](super::registry::EventRegistry) that
 //! widgets register on. System-global hotkeys are managed separately by
-//! [`GlobalHotkeyManager`](super::super::platform::global_hotkey::GlobalHotkeyManager).
+//! `GlobalHotkeyManager`.
 
 use crate::event::types::{Key, Modifiers};
 

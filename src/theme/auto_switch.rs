@@ -7,7 +7,7 @@ use crate::theme::m3::presets::SEED_PURPLE;
 use crate::theme::M3Theme;
 use auralis_signal::Signal;
 
-/// Create a Signal<M3Theme> that auto-switches based on system light/dark preference.
+/// Create a `Signal<M3Theme>` that auto-switches based on system light/dark preference.
 /// Default seed = M3 Purple.
 pub fn auto_theme() -> Signal<M3Theme> {
     auto_theme_with_seed(SEED_PURPLE)

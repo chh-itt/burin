@@ -60,7 +60,7 @@ pub fn wake_ui() {
 /// Push a closure onto the global UI queue and wake the event loop.
 ///
 /// The closure will be executed on the UI thread during the next
-/// event-loop drain cycle (see [`drain_ui_queue`]).  All of the
+/// event-loop drain cycle (see `drain_ui_queue`).  All of the
 /// framework's `thread_local!` state is available to the closure.
 ///
 /// # Example
