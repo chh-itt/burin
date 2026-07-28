@@ -493,6 +493,25 @@ pub(crate) fn try_set_offset(
     false
 }
 
+/// Replace the scroll physics policy for a scrollable element at runtime.
+///
+/// Useful for tests that need deterministic boundary behaviour regardless of
+/// platform defaults (e.g. `ClampPhysics` instead of macOS `BouncePhysics`).
+/// Returns true if the element has a ScrollBundle and the physics was set.
+pub fn set_scroll_physics(
+    arena: &crate::core::element::ElementArena,
+    eid: ElementId,
+    physics: Box<dyn crate::physics::ScrollPhysics>,
+) -> bool {
+    if let Some(el) = arena.get(eid) {
+        if let Some(refcell) = el.get_user_data::<ScrollBundleRef>() {
+            refcell.0.set_physics(physics);
+            return true;
+        }
+    }
+    false
+}
+
 /// Try to scroll a scrollable element using its ScrollBundle physics.
 /// Returns `Some((unconsumed_x, unconsumed_y))` if the element has a
 /// ScrollBundle and the scroll was applied. The unconsumed delta is the

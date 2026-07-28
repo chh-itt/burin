@@ -356,7 +356,7 @@ impl A11yBridge {
                     events.raise();
                 }
             }
-            #[cfg(target_os = "macos")]
+            #[cfg(all(target_os = "macos", feature = "a11y-platform"))]
             Some(PlatformAdapter::MacOS { adapter }) => {
                 let tree = updater();
                 let _ = self.snapshot.lock().map(|mut s| *s = Some(tree.clone()));

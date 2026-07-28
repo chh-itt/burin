@@ -110,9 +110,11 @@ impl UiError {
                 ErrorSeverity::Recoverable
             }
             Self::CallbackPanic { .. } => ErrorSeverity::Recoverable,
-            Self::Image(_) | Self::Svg(_) | Self::FontLoad(_) | Self::GridLayout(_) => {
-                ErrorSeverity::Warning
-            }
+            #[cfg(feature = "ext-image")]
+            Self::Image(_) => ErrorSeverity::Warning,
+            #[cfg(feature = "ext-svg")]
+            Self::Svg(_) => ErrorSeverity::Warning,
+            Self::FontLoad(_) | Self::GridLayout(_) => ErrorSeverity::Warning,
             #[cfg(feature = "ext-audio")]
             Self::Audio(_) => ErrorSeverity::Warning,
             #[cfg(feature = "clipboard")]

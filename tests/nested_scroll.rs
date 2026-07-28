@@ -11,6 +11,7 @@ use burin::core::context::MountContext;
 use burin::core::dirty_registry;
 use burin::core::widget::Widget;
 use burin::core::ElementId;
+use burin::physics::ClampPhysics;
 use burin::style::Dimension;
 use burin::testing::TestHarness;
 use burin::widgets::bundle::scroll;
@@ -44,6 +45,17 @@ fn scroll_offset_of(h: &TestHarness, eid: ElementId) -> burin::style::Vec2 {
         .comp_scroll(eid)
         .map(|sc| sc.scroll_offset.get())
         .unwrap_or(burin::style::Vec2::ZERO)
+}
+
+/// Swap a scroll element's physics to ClampPhysics for deterministic
+/// boundary behaviour in tests, regardless of platform default
+/// (BouncePhysics on macOS would allow overscroll and consume all delta).
+fn use_clamp_physics(h: &TestHarness, eid: ElementId) {
+    assert!(
+        scroll::set_scroll_physics(&h.arena, eid, Box::new(ClampPhysics)),
+        "element {:?} has no ScrollBundle",
+        eid
+    );
 }
 
 fn scroll_direct(h: &TestHarness, eid: ElementId, dx: f32, dy: f32) -> (f32, f32) {
@@ -93,6 +105,7 @@ fn scroll_by_unconsumed_at_boundary() {
     let mut h = TestHarness::new(400.0, 200.0);
     let id = h.mount(ScrollView::new().child(SizedBox::new().height(200.0)));
     h.run_frame();
+    use_clamp_physics(&h, id);
     // Scroll up past top — physics rejects all
     let (_, uy) = scroll_direct(&h, id, 0.0, -50.0);
     assert!(uy < -40.0, "unconsumed y={:.1} should be ~ -50", uy);
@@ -146,6 +159,10 @@ fn setup_nested(h: &mut TestHarness) -> (ElementId, ElementId) {
 fn nested_inner_at_boundary_passes_unconsumed_to_outer() {
     let mut h = TestHarness::new(400.0, 400.0);
     let (outer_id, inner_id) = setup_nested(&mut h);
+
+    // Use ClampPhysics so unconsumed delta isn't swallowed by bounce overscroll.
+    use_clamp_physics(&h, inner_id);
+    use_clamp_physics(&h, outer_id);
 
     // Scroll inner to max (content 450, vp 150, max=300)
     h.scroll(inner_id, 0.0, -300.0);
