@@ -21,8 +21,8 @@ jobs:
           components: rustfmt
       - run: cargo fmt --all -- --check
 
-  check:
-    name: cargo check (${{ matrix.os }})
+  check-full:
+    name: cargo check (full features) (${{ matrix.os }})
     needs: fmt
     strategy:
       matrix:
@@ -37,6 +37,20 @@ jobs:
         run: cargo check --features "backend-wgpu,backend-tiny-skia,backend-tiny-skia-x11,backend-tiny-skia-wayland,lyon,display,display-advanced,text-cosmic,i18n,a11y-platform,file-dialog,clipboard,system-theme,global-hotkey,tracing,devtools,file-logging,ext-jiff,ext-image,ext-svg,ext-audio,ssr,async-tokio"
       - if: runner.os != 'Linux'
         run: cargo check --features "backend-wgpu,backend-tiny-skia,backend-tiny-skia-x11,backend-tiny-skia-wayland,lyon,display,display-advanced,text-cosmic,i18n,tray,a11y-platform,file-dialog,clipboard,system-theme,global-hotkey,tracing,devtools,file-logging,ext-jiff,ext-image,ext-svg,ext-audio,ssr,async-tokio"
+
+  check:
+    name: cargo check (default) (${{ matrix.os }})
+    needs: fmt
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libx11-dev libxi-dev libxrandr-dev libwayland-dev libdbus-1-dev libasound2-dev
+      - run: cargo check
 
   clippy:
     name: cargo clippy
@@ -72,7 +86,7 @@ jobs:
     needs: fmt
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
