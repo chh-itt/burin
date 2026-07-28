@@ -1,6 +1,6 @@
 [package]
 name = "burin"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A Rust GUI framework built on the auralis reactive signal kernel"
 license = "MIT OR Apache-2.0"
@@ -163,7 +163,7 @@ resvg = { version = "0.47", optional = true }
 usvg = { version = "0.47", optional = true }
 
 # Platform-specific display-advanced support
-burin-platform = { version = "0.1.1", path = "burin-platform", optional = true }
+burin-platform = { version = "0.1.2", path = "burin-platform", optional = true }
 
 [build-dependencies]
 built = { version = "0.8", optional = true }

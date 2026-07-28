@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.2 — 2026-07-28
+
+### Fixed
+
+- **macOS compilation without `a11y-platform` feature** (#7): `PlatformAdapter::MacOS` match arm in `a11y_bridge.rs` now has the same `#[cfg]` guard as the variant definition, preventing a "variant not found" error when compiling on macOS with default features.
+- **`error.rs` severity mapping**: `UiError::Image` and `UiError::Svg` match arms now correctly gated on `feature = "ext-image"` / `feature = "ext-svg"`.
+- **Nested scroll tests on macOS**: Two integration tests (`scroll_by_unconsumed_at_boundary`, `nested_inner_at_boundary_passes_unconsumed_to_outer`) now explicitly use `ClampPhysics` so unconsumed-delta plumbing tests are deterministic across platforms, regardless of macOS `BouncePhysics` overscroll behaviour.
+
+### CI
+
+- **Default features check**: New `cargo check (default)` job on all three platforms to catch `#[cfg]` guard mismatches against the default feature set — the previous "full features" check masked these bugs.
+- **Integration tests now run on macOS** in addition to Ubuntu and Windows.
+
+## 0.1.1 — 2026-07-27
+
+### Changed
+
+- **Split `window.rs` into 24 sub-modules** for maintainability.
+- Fixed list reorder and scroll-related issues.
+
+### Fixed
+
+- Removed duplicate GPU effects section.
+- Fixed orphan signal displays.
+
 ## 0.1.0 — First Release
 
 ### Reactive Core
